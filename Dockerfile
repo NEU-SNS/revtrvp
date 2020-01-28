@@ -51,6 +51,6 @@ RUN which scamper
 WORKDIR /
 
 ENTRYPOINT ["/revtr-vp"]
-CMD ["-loglevel", "error"]
+CMD ["/root.crt /plvp.config -loglevel", "error"]
 
 EXPOSE 4381

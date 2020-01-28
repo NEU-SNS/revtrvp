@@ -75,6 +75,10 @@ func init() {
 }
 
 func main() {
+    args = os.Args
+    rootArg = os.Args[1]
+    configArg = os.Args[2]
+    configPath = configArg
 	go sigHandle()
 	err := config.Parse(flag.CommandLine, &conf)
 	if err != nil {
@@ -85,6 +89,8 @@ func main() {
 		fmt.Println(versionNo)
 		exit(0)
 	}
+    args = os.Args
+    rootArg = os.Args[1]
 //	_, err = os.Stat(lockFile)
 //	if err == nil {
 //		log.Debug("Lockfile exists")
@@ -97,7 +103,7 @@ func main() {
 //		}
 //	}
 	util.CloseStdFiles(*conf.Local.CloseStdDesc)
-	err = <-plvp.Start(conf, &plvp.PLControllerSender{RootCA: *conf.Local.RootCA})
+	err = <-plvp.Start(conf, &plvp.PLControllerSender{RootCA: rootArg})
 	if err != nil {
 		log.Errorf("PLVP Start returned with error: %v", err)
 		exit(1)
