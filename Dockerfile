@@ -1,9 +1,7 @@
 FROM golang:1.13 as build_revtrvp
 ADD . /go/src/github.com/NEU-SNS/revtrvp
-ENV GOARCH amd64
-ENV CGO_ENABLED 0
-ENV GOOS linux
 WORKDIR /go/src/github.com/NEU-SNS/revtrvp
+RUN go build -o revtrvp .
 RUN chmod -R a+rx /go/src/github.com/NEU-SNS/revtrvp/revtrvp
 
 FROM ubuntu:18.04 as build_scamper
@@ -51,6 +49,6 @@ RUN which scamper
 WORKDIR /
 
 ENTRYPOINT ["/revtrvp"]
-CMD ["/root.crt /plvp.config -loglevel", "error"]
+CMD ["/root.crt", "plvp.config", "-loglevel", "error"]
 
 EXPOSE 4381
