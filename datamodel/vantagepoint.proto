@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option go_package = "datamodel";
+
+package datamodel;
+
+message VantagePoint {
+    string hostname      =  1;
+    uint32 ip            =  2;
+    bool sshable         =  3;
+    bool timestamp       =  4;
+    bool record_route    =  5;
+    int64 last_updated   =  6;
+    bool can_spoof       =  7;
+    uint32 controller    =  8;
+    bool receive_spoof   =  9;
+    string site          = 10;
+    int64 spoof_checked  = 11;
+    uint32 port          = 12;
+    
+}
+
+message VPRequest {
+}
+
+message VPReturn {
+    repeated VantagePoint vps = 1;
+}
+
+message RRSpooferRequest {
+  uint32 addr =  1;
+  uint32 max  =  2;
+}
+
+message RRSpooferResponse {
+  uint32 addr =  1;
+  uint32 max  =  2;
+  repeated VantagePoint spoofers = 3;
+}
+
+message TSSpooferRequest {
+  uint32 max  =  1;
+}
+
+message TSSpooferResponse {
+  uint32 max  =  1;
+  repeated VantagePoint spoofers = 2;
+}

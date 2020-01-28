@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+import "github.com/NEU-SNS/ReverseTraceroute/datamodel/time.proto";
+
+option go_package = "datamodel";
+
+package datamodel;
+
+message TracerouteMeasurement {
+  int64 staleness         =  1;
+	uint32 dst            =  3;
+	string confidence     =  4;
+	string dport          =  5;
+	string first_hop      =  6;
+	string gap_limit      =  7;
+	string gap_action     =  8;
+	string max_ttl        =  9;
+	  bool path_discov    = 10;
+	string loops          = 11;
+	string loop_action    = 12;
+	string payload        = 13;
+	string method         = 14;
+	string attempts       = 15;
+	  bool send_all       = 16;
+	string sport          = 17;
+	uint32 src            = 18;
+	string tos            = 19;
+	  bool time_exceeded  = 20;
+	string user_id        = 21;
+	string wait           = 22;
+	string wait_probe     = 23;
+	string gss_entry      = 24;
+	string lss_name       = 25;
+     int64 timeout        = 26;
+      bool check_cache    = 27;
+      bool check_db       = 28;
+
+}
+
+message TracerouteArg {
+  repeated TracerouteMeasurement traceroutes = 1;
+}
+
+message TracerouteArgResp {
+  repeated Traceroute traceroutes = 1;
+}
+
+message TracerouteHop {
+    uint32 addr        =  1;
+	uint32 probe_ttl   =  2;
+	uint32 probe_id    =  3;
+	uint32 probe_size  =  4;
+	   RTT rtt         =  5;
+	uint32 reply_ttl   =  6;
+	uint32 reply_tos   =  7;
+	uint32 reply_size  =  8;
+	uint32 reply_ipid  =  9;
+	uint32 icmp_type   = 10;
+	uint32 icmp_code   = 11;
+	uint32 icmp_q_ttl  = 12;
+	uint32 icmp_q_ipl  = 13;
+	uint32 icmp_q_tos  = 14;
+}
+
+message Traceroute {
+  string type                 =  1;
+  uint32 user_id              =  2;
+  string method               =  3;
+  uint32 src                  =  4;
+  uint32 dst                  =  5;
+  uint32 sport                =  6;
+  uint32 dport                =  7;
+  string stop_reason          =  8;
+  uint32 stop_data            =  9;
+  TracerouteTime start        = 10;
+  uint32 hop_count            = 11;
+  uint32 attempts             = 12;
+  uint32 hoplimit             = 13;
+  uint32 firsthop             = 14;
+  uint32 wait                 = 15;
+  uint32 wait_probe           = 16;
+  uint32 tos                  = 17;
+  uint32 probe_size           = 18;
+  repeated TracerouteHop hops = 19;
+  string error                = 20;
+  string version              = 21;
+  uint32 gap_limit            = 22;
+   int64 id                   = 23; 
+}
+
+message TracerouteTime {
+     int64 sec    = 1;
+     int64 usec   = 2;
+    string ftime  = 3;
+}
+

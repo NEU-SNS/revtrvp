@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+import "github.com/NEU-SNS/revtr-vp/datamodel/time.proto";
+
+option go_package = "datamodel";
+
+package datamodel;
+
+message PingMeasurement {
+    uint32 src          =  1;
+    uint32 dst          =  2;
+    uint32 spoofer_addr =  3;
+    bool spoof          =  4;
+    bool RR             =  5;
+    string s_addr       =  6;
+    string payload      =  7;
+    string count        =  8;
+    string icmp_sum     =  9;
+    string dport        = 10;
+    string sport        = 11;
+    string wait         = 12;
+    string ttl          = 13;
+    string mtu          = 14;
+    string reply_count  = 15;
+    string pattern      = 16;
+    string method       = 17;
+    string size         = 18;
+    string user_id      = 19;
+    string tos          = 20;
+    string time_stamp   = 21;
+    int64 timeout       = 22;
+    bool check_cache    = 23;
+    bool check_db       = 24;
+    int64 staleness     = 25;
+
+}
+
+message PingArg {
+  repeated PingMeasurement pings = 1;
+}
+
+message PingArgResp {
+  repeated Ping pings = 1;
+}
+
+message PingStats {
+    int32 replies = 1;
+    float loss    = 2;
+    float min     = 3;
+    float max     = 4;
+    float avg     = 5;
+    float stddev  = 6;
+}
+
+message PingResponse {
+    uint32 from                  =  1;
+    uint32 seq                   =  2;
+    uint32 reply_size            =  3;
+    uint32 reply_ttl             =  4;
+    string reply_proto           =  5;
+    Time tx                      =  6;
+    Time rx                      =  7;
+    uint32 rtt                   =  8;
+    uint32 probe_ipid            =  9;
+    uint32 reply_ipid            = 10;
+    uint32 icmp_type             = 11;
+    uint32 icmp_code             = 12;
+    repeated uint32 RR           = 13;
+    repeated uint32 tsonly       = 14;
+    repeated TsAndAddr tsandaddr = 15;
+
+}
+
+message TsAndAddr {
+  uint32 ip  = 1;
+  uint32 ts  = 2;
+}
+
+message Ping {
+  string type                     =  1;
+  string method                   =  2;
+  uint32 src                      =  3;
+  uint32 dst                      =  4;
+  Time start                      =  5;
+  uint32 ping_sent                =  6;
+  uint32 probe_size               =  7;
+  uint32 user_id                  =  8;
+  uint32 ttl                      =  9;
+  uint32 wait                     = 10;
+  uint32 timeout                  = 11;
+  repeated string flags           = 12;
+  repeated PingResponse responses = 13;
+  PingStats statistics            = 14;
+  string error                    = 15;
+  string version                  = 16;
+  uint32 spoofed_from             = 17;
+  int64 id                        = 18;
+}

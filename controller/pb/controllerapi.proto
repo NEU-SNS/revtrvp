@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+
+option go_package = "controllerapi";
+
+package controllerapi;
+
+import "github.com/NEU-SNS/revtr-vp/datamodel/ping.proto";
+import "github.com/NEU-SNS/revtr-vp/datamodel/traceroute.proto";
+import "github.com/NEU-SNS/revtr-vp/datamodel/vantagepoint.proto";
+import "github.com/NEU-SNS/revtr-vp/datamodel/recspoof.proto";
+
+service Controller {
+    rpc Ping(datamodel.PingArg) returns (stream datamodel.Ping) {}
+    rpc Traceroute(datamodel.TracerouteArg) returns (stream datamodel.Traceroute) {}
+    rpc GetVPs(datamodel.VPRequest) returns (datamodel.VPReturn) {}
+    rpc ReceiveSpoofedProbes(stream datamodel.Probe) returns (datamodel.ReceiveSpoofedProbesResponse) {}
+}

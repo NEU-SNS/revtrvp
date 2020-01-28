@@ -1,0 +1,56 @@
+FROM golang:1.13 as build_revtrvp
+ADD . /go/src/github.com/NEU-SNS/revtr-vp
+ENV GOARCH amd64
+ENV CGO_ENABLED 0
+ENV GOOS linux
+WORKDIR /go/src/github.com/NEU-SNS/revtr-vp
+RUN chmod -R a+rx /go/src/github.com/NEU-SNS/revtr-vp/revtr-vp
+
+FROM ubuntu:18.04 as build_scamper
+
+RUN apt-get update && \
+    apt-get install -y make coreutils autoconf libtool git build-essential wget && \
+    apt-get clean && \
+    rm -rf /var/lib/opt/lists/*
+
+RUN ls -l
+RUN mkdir -p scamper-src && cd scamper-src && \
+    wget http://www.ccs.neu.edu/home/rhansen2/scamper.tar.gz && \
+    tar xzf scamper.tar.gz && cd scamper-cvs-20150901
+WORKDIR /scamper-src/scamper-cvs-20150901/
+RUN ./configure && make install
+
+
+#WORKDIR /plvp
+#COPY . /plvp
+
+#RUN useradd -ms /bin/bash plvp
+FROM ubuntu:18.04
+
+RUN dpkg --add-architecture i386
+
+RUN apt-get update && apt-get install -y \
+    wget \
+    build-essential \
+    libc6:i386 \
+    libncurses5:i386 \
+    libstdc++6:i386 \
+    iputils-ping \
+    inetutils-traceroute \
+    init-system-helpers \
+&&  apt-get clean \
+&&  rm -rf /var/lib/apt/lists/*
+
+COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtr-vp/revtr-vp /
+COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtr-vp/root.crt /
+COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtr-vp/plvp.config /
+COPY --from=build_scamper /usr/local/bin/scamper /usr/local/bin
+
+RUN ldconfig
+RUN which scamper
+WORKDIR /
+
+ENTRYPOINT ["/revtr-vp"]
+CMD ["-loglevel", "error"]
+
+EXPOSE 4381
