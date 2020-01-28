@@ -31,6 +31,8 @@ var (
 var conf = plvp.NewConfig()
 
 func init() {
+	configArg := os.Args[2]
+	configPath = configArg
 	config.SetEnvPrefix("REVTR")
 	if configPath == "" {
 		config.AddConfigPath(defaultConfig)
@@ -74,9 +76,6 @@ func init() {
 }
 
 func main() {
-	rootArg := os.Args[1]
-	configArg := os.Args[2]
-	configPath = configArg
 	go sigHandle()
 	err := config.Parse(flag.CommandLine, &conf)
 	if err != nil {
@@ -98,6 +97,7 @@ func main() {
 	//			exit(1)
 	//		}
 	//	}
+	rootArg := os.Args[1]
 	util.CloseStdFiles(*conf.Local.CloseStdDesc)
 	err = <-plvp.Start(conf, &plvp.PLControllerSender{RootCA: rootArg})
 	if err != nil {
