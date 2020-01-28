@@ -12,6 +12,7 @@ require (
 	github.com/prometheus/procfs v0.0.0-20160411190841-abf152e5f3e9 // indirect
 	github.com/rhansen2/ipv4optparser v0.0.0-20160617172109-7217b1413f4b
 	github.com/sirupsen/logrus v1.4.2
+	golang.org/dl v0.0.0-20200113210548-1b9ab2716afa // indirect
 	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa
 	google.golang.org/grpc v1.26.0
 	gopkg.in/yaml.v2 v2.2.8
