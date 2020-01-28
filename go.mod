@@ -1,4 +1,4 @@
-module github.com/NEU-SNS/revtr-vp
+module github.com/NEU-SNS/revtrvp
 
 go 1.13
 

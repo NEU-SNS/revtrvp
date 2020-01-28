@@ -31,7 +31,7 @@ import (
 	"io"
 	"sync"
 
-	"github.com/NEU-SNS/revtr-vp/util"
+	"github.com/NEU-SNS/revtrvp/util"
 )
 
 // Address represents an address

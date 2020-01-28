@@ -3,7 +3,7 @@ package plvp
 import (
 	"testing"
 
-	dm "github.com/NEU-SNS/revtr-vp/datamodel"
+	dm "github.com/NEU-SNS/revtrvp/datamodel"
 	opt "github.com/rhansen2/ipv4optparser"
 )
 

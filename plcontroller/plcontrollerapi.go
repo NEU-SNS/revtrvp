@@ -34,9 +34,9 @@ import (
 	"sync"
 	"time"
 
-	dm "github.com/NEU-SNS/revtr-vp/datamodel"
-	"github.com/NEU-SNS/revtr-vp/log"
-	plc "github.com/NEU-SNS/revtr-vp/plcontroller/pb"
+	dm "github.com/NEU-SNS/revtrvp/datamodel"
+	"github.com/NEU-SNS/revtrvp/log"
+	plc "github.com/NEU-SNS/revtrvp/plcontroller/pb"
 	con "golang.org/x/net/context"
 )
 

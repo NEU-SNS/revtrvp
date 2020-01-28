@@ -35,8 +35,8 @@ import (
 	"strconv"
 	"sync"
 
-	dm "github.com/NEU-SNS/revtr-vp/datamodel"
-	"github.com/NEU-SNS/revtr-vp/util"
+	dm "github.com/NEU-SNS/revtrvp/datamodel"
+	"github.com/NEU-SNS/revtrvp/util"
 )
 
 // Cmd is a command that can run on scamper

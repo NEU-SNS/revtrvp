@@ -35,8 +35,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/NEU-SNS/revtr-vp/log"
-	"github.com/NEU-SNS/revtr-vp/mproc/proc"
+	"github.com/NEU-SNS/revtrvp/log"
+	"github.com/NEU-SNS/revtrvp/mproc/proc"
 )
 
 const (

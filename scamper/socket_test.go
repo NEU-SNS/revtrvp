@@ -34,8 +34,8 @@ import (
 	"net"
 	"testing"
 
-	"github.com/NEU-SNS/revtr-vp/datamodel"
-	"github.com/NEU-SNS/revtr-vp/scamper"
+	"github.com/NEU-SNS/revtrvp/datamodel"
+	"github.com/NEU-SNS/revtrvp/scamper"
 )
 
 type dumpListener struct {

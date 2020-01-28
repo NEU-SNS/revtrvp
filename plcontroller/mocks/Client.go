@@ -2,7 +2,7 @@ package mocks
 
 import "github.com/stretchr/testify/mock"
 
-import "github.com/NEU-SNS/revtr-vp/scamper"
+import "github.com/NEU-SNS/revtrvp/scamper"
 
 type Client struct {
 	mock.Mock

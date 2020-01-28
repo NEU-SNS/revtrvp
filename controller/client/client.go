@@ -1,8 +1,8 @@
 package client
 
 import (
-	"github.com/NEU-SNS/revtr-vp/controller/pb"
-	"github.com/NEU-SNS/revtr-vp/datamodel"
+	"github.com/NEU-SNS/revtrvp/controller/pb"
+	"github.com/NEU-SNS/revtrvp/datamodel"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )

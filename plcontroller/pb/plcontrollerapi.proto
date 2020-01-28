@@ -4,10 +4,10 @@ package pb;
 
 option go_package = "pb";
 
-import "github.com/NEU-SNS/revtr-vp/datamodel/ping.proto";
-import "github.com/NEU-SNS/revtr-vp/datamodel/traceroute.proto";
-import "github.com/NEU-SNS/revtr-vp/datamodel/vantagepoint.proto";
-import "github.com/NEU-SNS/revtr-vp/datamodel/recspoof.proto";
+import "github.com/NEU-SNS/revtrvp/datamodel/ping.proto";
+import "github.com/NEU-SNS/revtrvp/datamodel/traceroute.proto";
+import "github.com/NEU-SNS/revtrvp/datamodel/vantagepoint.proto";
+import "github.com/NEU-SNS/revtrvp/datamodel/recspoof.proto";
 
 service PLController {
 

@@ -31,8 +31,8 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/NEU-SNS/revtr-vp/datamodel"
-	"github.com/NEU-SNS/revtr-vp/warts"
+	"github.com/NEU-SNS/revtrvp/datamodel"
+	"github.com/NEU-SNS/revtrvp/warts"
 )
 
 func TestParsePing(t *testing.T) {

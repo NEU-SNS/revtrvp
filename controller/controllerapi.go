@@ -36,10 +36,10 @@ import (
 	"strconv"
 	"time"
 
-	cont "github.com/NEU-SNS/revtr-vp/controller/pb"
-	dm "github.com/NEU-SNS/revtr-vp/datamodel"
-	"github.com/NEU-SNS/revtr-vp/log"
-	"github.com/NEU-SNS/revtr-vp/util"
+	cont "github.com/NEU-SNS/revtrvp/controller/pb"
+	dm "github.com/NEU-SNS/revtrvp/datamodel"
+	"github.com/NEU-SNS/revtrvp/log"
+	"github.com/NEU-SNS/revtrvp/util"
 	"github.com/gogo/protobuf/jsonpb"
 	con "golang.org/x/net/context"
 )

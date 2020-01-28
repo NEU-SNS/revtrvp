@@ -34,7 +34,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/NEU-SNS/revtr-vp/config"
+	"github.com/NEU-SNS/revtrvp/config"
 )
 
 type SubConfig struct {

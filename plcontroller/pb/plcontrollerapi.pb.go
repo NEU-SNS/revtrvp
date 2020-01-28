@@ -6,7 +6,7 @@ package pb
 import (
 	context "context"
 	fmt "fmt"
-	datamodel "github.com/NEU-SNS/revtr-vp/datamodel"
+	datamodel "github.com/NEU-SNS/revtrvp/datamodel"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"

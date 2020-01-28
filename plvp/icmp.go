@@ -32,9 +32,9 @@ import (
 	"fmt"
 	"net"
 
-	dm "github.com/NEU-SNS/revtr-vp/datamodel"
-	"github.com/NEU-SNS/revtr-vp/log"
-	"github.com/NEU-SNS/revtr-vp/util"
+	dm "github.com/NEU-SNS/revtrvp/datamodel"
+	"github.com/NEU-SNS/revtrvp/log"
+	"github.com/NEU-SNS/revtrvp/util"
 	opt "github.com/rhansen2/ipv4optparser"
 	"golang.org/x/net/icmp"
 	"golang.org/x/net/ipv4"

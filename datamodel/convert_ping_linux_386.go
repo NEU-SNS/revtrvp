@@ -27,7 +27,7 @@
 
 package datamodel
 
-import "github.com/NEU-SNS/revtr-vp/warts"
+import "github.com/NEU-SNS/revtrvp/warts"
 
 // ConvertPing converts a warts ping to a DM ping
 func ConvertPing(in warts.Ping) Ping {

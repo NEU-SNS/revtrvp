@@ -33,8 +33,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/NEU-SNS/revtr-vp/log"
-	"github.com/NEU-SNS/revtr-vp/util"
+	"github.com/NEU-SNS/revtrvp/log"
+	"github.com/NEU-SNS/revtrvp/util"
 	"github.com/golang/protobuf/proto"
 )
 

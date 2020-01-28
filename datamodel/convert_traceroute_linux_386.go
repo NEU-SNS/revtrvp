@@ -30,7 +30,7 @@ package datamodel
 import (
 	"time"
 
-	"github.com/NEU-SNS/revtr-vp/warts"
+	"github.com/NEU-SNS/revtrvp/warts"
 )
 
 // ConvertTraceroute converts a warts tr to a tr

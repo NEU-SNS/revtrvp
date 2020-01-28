@@ -29,7 +29,7 @@ package cache_test
 import (
 	"testing"
 
-	"github.com/NEU-SNS/revtr-vp/cache"
+	"github.com/NEU-SNS/revtrvp/cache"
 )
 
 var list = cache.ServerList{"127.0.0.1:11211"}

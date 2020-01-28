@@ -32,8 +32,8 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/NEU-SNS/revtr-vp/datamodel"
-	"github.com/NEU-SNS/revtr-vp/util"
+	"github.com/NEU-SNS/revtrvp/datamodel"
+	"github.com/NEU-SNS/revtrvp/util"
 )
 
 func BenchmarkConvertBytes(b *testing.B) {

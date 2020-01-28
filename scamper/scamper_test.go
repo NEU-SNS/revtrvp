@@ -33,10 +33,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/NEU-SNS/revtr-vp/datamodel"
-	"github.com/NEU-SNS/revtr-vp/scamper"
-	"github.com/NEU-SNS/revtr-vp/scamper/internal"
-	"github.com/NEU-SNS/revtr-vp/util"
+	"github.com/NEU-SNS/revtrvp/datamodel"
+	"github.com/NEU-SNS/revtrvp/scamper"
+	"github.com/NEU-SNS/revtrvp/scamper/internal"
+	"github.com/NEU-SNS/revtrvp/util"
 )
 
 var sockPath = "/tmp/192.168.1.2:5000"

@@ -1,10 +1,10 @@
 FROM golang:1.13 as build_revtrvp
-ADD . /go/src/github.com/NEU-SNS/revtr-vp
+ADD . /go/src/github.com/NEU-SNS/revtrvp
 ENV GOARCH amd64
 ENV CGO_ENABLED 0
 ENV GOOS linux
-WORKDIR /go/src/github.com/NEU-SNS/revtr-vp
-RUN chmod -R a+rx /go/src/github.com/NEU-SNS/revtr-vp/revtr-vp
+WORKDIR /go/src/github.com/NEU-SNS/revtrvp
+RUN chmod -R a+rx /go/src/github.com/NEU-SNS/revtrvp/revtrvp
 
 FROM ubuntu:18.04 as build_scamper
 
@@ -41,16 +41,16 @@ RUN apt-get update && apt-get install -y \
 &&  apt-get clean \
 &&  rm -rf /var/lib/apt/lists/*
 
-COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtr-vp/revtr-vp /
-COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtr-vp/root.crt /
-COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtr-vp/plvp.config /
+COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/revtrvp /
+COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/root.crt /
+COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/plvp.config /
 COPY --from=build_scamper /usr/local/bin/scamper /usr/local/bin
 
 RUN ldconfig
 RUN which scamper
 WORKDIR /
 
-ENTRYPOINT ["/revtr-vp"]
+ENTRYPOINT ["/revtrvp"]
 CMD ["/root.crt /plvp.config -loglevel", "error"]
 
 EXPOSE 4381

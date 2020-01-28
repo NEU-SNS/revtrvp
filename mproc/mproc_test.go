@@ -30,8 +30,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/NEU-SNS/revtr-vp/mproc"
-	"github.com/NEU-SNS/revtr-vp/mproc/proc"
+	"github.com/NEU-SNS/revtrvp/mproc"
+	"github.com/NEU-SNS/revtrvp/mproc/proc"
 )
 
 func TestManageProcess(t *testing.T) {

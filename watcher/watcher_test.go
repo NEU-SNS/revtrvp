@@ -32,8 +32,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/NEU-SNS/revtr-vp/util"
-	"github.com/NEU-SNS/revtr-vp/watcher"
+	"github.com/NEU-SNS/revtrvp/util"
+	"github.com/NEU-SNS/revtrvp/watcher"
 )
 
 func TestEvents(t *testing.T) {

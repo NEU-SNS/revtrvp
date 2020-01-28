@@ -29,8 +29,8 @@
 package controller
 
 import (
-	"github.com/NEU-SNS/revtr-vp/cache"
-	da "github.com/NEU-SNS/revtr-vp/dataaccess"
+	"github.com/NEU-SNS/revtrvp/cache"
+	da "github.com/NEU-SNS/revtrvp/dataaccess"
 )
 
 // Config is the config struct for the controller

@@ -14,10 +14,10 @@ import (
 
 	"google.golang.org/grpc/grpclog"
 
-	"github.com/NEU-SNS/revtr-vp/config"
-	"github.com/NEU-SNS/revtr-vp/log"
-	"github.com/NEU-SNS/revtr-vp/plvp"
-	"github.com/NEU-SNS/revtr-vp/util"
+	"github.com/NEU-SNS/revtrvp/config"
+	"github.com/NEU-SNS/revtrvp/log"
+	"github.com/NEU-SNS/revtrvp/plvp"
+	"github.com/NEU-SNS/revtrvp/util"
 )
 
 var (

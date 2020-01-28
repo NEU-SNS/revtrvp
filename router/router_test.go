@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/NEU-SNS/revtr-vp/router"
+	"github.com/NEU-SNS/revtrvp/router"
 )
 
 var (

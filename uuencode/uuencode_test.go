@@ -30,7 +30,7 @@ package uuencode_test
 import (
 	"testing"
 
-	"github.com/NEU-SNS/revtr-vp/uuencode"
+	"github.com/NEU-SNS/revtrvp/uuencode"
 )
 
 func TestEncode(t *testing.T) {

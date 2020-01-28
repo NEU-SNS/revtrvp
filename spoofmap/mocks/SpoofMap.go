@@ -2,7 +2,7 @@ package mocks
 
 import "github.com/stretchr/testify/mock"
 
-import dm "github.com/NEU-SNS/revtr-vp/datamodel"
+import dm "github.com/NEU-SNS/revtrvp/datamodel"
 
 type SpoofMap struct {
 	mock.Mock

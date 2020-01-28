@@ -33,7 +33,7 @@ import (
 
 	"golang.org/x/net/context"
 
-	dm "github.com/NEU-SNS/revtr-vp/datamodel"
+	dm "github.com/NEU-SNS/revtrvp/datamodel"
 )
 
 type service uint

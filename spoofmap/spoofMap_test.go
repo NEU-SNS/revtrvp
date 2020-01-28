@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/NEU-SNS/revtr-vp/datamodel"
-	"github.com/NEU-SNS/revtr-vp/spoofmap"
-	"github.com/NEU-SNS/revtr-vp/util"
+	"github.com/NEU-SNS/revtrvp/datamodel"
+	"github.com/NEU-SNS/revtrvp/spoofmap"
+	"github.com/NEU-SNS/revtrvp/util"
 )
 
 type sender struct {

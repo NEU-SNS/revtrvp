@@ -1,6 +1,6 @@
 package mocks
 
-import "github.com/NEU-SNS/revtr-vp/watcher"
+import "github.com/NEU-SNS/revtrvp/watcher"
 import "github.com/stretchr/testify/mock"
 
 type Event struct {

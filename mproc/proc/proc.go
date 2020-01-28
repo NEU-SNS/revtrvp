@@ -33,7 +33,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/NEU-SNS/revtr-vp/log"
+	"github.com/NEU-SNS/revtrvp/log"
 )
 
 // Process represents a process

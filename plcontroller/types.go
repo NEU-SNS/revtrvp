@@ -28,8 +28,8 @@
 package plcontroller
 
 import (
-	"github.com/NEU-SNS/revtr-vp/datamodel"
-	"github.com/NEU-SNS/revtr-vp/scamper"
+	"github.com/NEU-SNS/revtrvp/datamodel"
+	"github.com/NEU-SNS/revtrvp/scamper"
 )
 
 // Config is the config struct for the plc

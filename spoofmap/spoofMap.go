@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	dm "github.com/NEU-SNS/revtr-vp/datamodel"
-	"github.com/NEU-SNS/revtr-vp/log"
+	dm "github.com/NEU-SNS/revtrvp/datamodel"
+	"github.com/NEU-SNS/revtrvp/log"
 )
 
 var (

@@ -30,7 +30,7 @@ package datamodel
 import (
 	"fmt"
 
-	"github.com/NEU-SNS/revtr-vp/util"
+	"github.com/NEU-SNS/revtrvp/util"
 	"github.com/golang/protobuf/proto"
 )
 

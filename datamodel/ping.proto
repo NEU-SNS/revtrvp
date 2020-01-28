@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "github.com/NEU-SNS/revtr-vp/datamodel/time.proto";
+import "github.com/NEU-SNS/revtrvp/datamodel/time.proto";
 
 option go_package = "datamodel";
 

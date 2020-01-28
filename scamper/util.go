@@ -33,9 +33,9 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/NEU-SNS/revtr-vp/log"
-	"github.com/NEU-SNS/revtr-vp/mproc/proc"
-	"github.com/NEU-SNS/revtr-vp/util"
+	"github.com/NEU-SNS/revtrvp/log"
+	"github.com/NEU-SNS/revtrvp/mproc/proc"
+	"github.com/NEU-SNS/revtrvp/util"
 )
 
 // Options for the scamper process

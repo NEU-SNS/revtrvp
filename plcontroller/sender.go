@@ -31,9 +31,9 @@ package plcontroller
 import (
 	"fmt"
 
-	plc "github.com/NEU-SNS/revtr-vp/controller/pb"
-	dm "github.com/NEU-SNS/revtr-vp/datamodel"
-	"github.com/NEU-SNS/revtr-vp/util"
+	plc "github.com/NEU-SNS/revtrvp/controller/pb"
+	dm "github.com/NEU-SNS/revtrvp/datamodel"
+	"github.com/NEU-SNS/revtrvp/util"
 	con "golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"

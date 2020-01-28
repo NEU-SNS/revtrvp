@@ -3,7 +3,7 @@ package controller
 import (
 	"sync"
 
-	dm "github.com/NEU-SNS/revtr-vp/datamodel"
+	dm "github.com/NEU-SNS/revtrvp/datamodel"
 	"github.com/prometheus/log"
 )
 
