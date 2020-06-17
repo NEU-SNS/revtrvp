@@ -25,6 +25,7 @@ RUN ./configure && make install
 #RUN useradd -ms /bin/bash plvp
 FROM ubuntu:18.04
 
+RUN apt-get update
 RUN apt-get install -y tcpdump 
 RUN apt-get -y install cron 
 RUN apt-get -y install python3
