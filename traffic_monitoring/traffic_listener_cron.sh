@@ -20,9 +20,11 @@ done
 
 
 if [ -f "${pcapfilename}" ]; then
-	echo "Running email script."
+	echo "Adding the packet capture script."
     # Send packet capture.
-	python3 /traffic_monitoring/send_email.py ${pcapfilename}
+    current_time=$(date "+%Y%m%d_%H%M%S")
+    cp ${pcapfilename} "/var/spool/revtrvp/traffic/traffic_capture_${current_time}"
+	#python3 /traffic_monitoring/send_email.py ${pcapfilename}
 fi
 
 
