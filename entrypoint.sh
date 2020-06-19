@@ -7,5 +7,4 @@ echo "* * * * * bash /traffic_monitoring/traffic_listener_cron.sh >> /var/log/cr
 # Don't remove the empty line at the end of this file. It is required to run the cron job" > /traffic_monitoring/traffic_crontab
 
 crontab /traffic_monitoring/traffic_crontab
-
-/revtrvp $@ && cron -f
+cron && /revtrvp $@
