@@ -5,7 +5,7 @@
 # emails the network traffic for the past 30 minutes
 
 pcapfilename="/traffic_monitoring/traffic.pcap"
-command="tcpdump icmp -w ${pcapfilename}"
+command="tcpdump -i net1 icmp -w ${pcapfilename}"
 working=$(ps ax | grep "${command}" | wc -l)
 
 # Kill tcpdump and collect packet capture.
@@ -23,7 +23,7 @@ if [ -f "${pcapfilename}" ]; then
 	echo "Adding the packet capture script."
     # Send packet capture.
     current_time=$(date "+%Y%m%d_%H%M%S")
-    cp ${pcapfilename} "/var/spool/revtrvp/traffic/traffic_capture_${current_time}"
+    cp ${pcapfilename} "/var/spool/revtr/traffic/traffic_capture_${current_time}"
 	#python3 /traffic_monitoring/send_email.py ${pcapfilename}
 fi
 
@@ -33,7 +33,7 @@ echo "Restarting packet capture."
 while [ $working -le 1 ];
 do
 	# Reboot if needed
-	tcpdump icmp -w ${pcapfilename} &
+	tcpdump -i net1 icmp -w ${pcapfilename} &
 	sleep 1
 	working=$(ps ax | grep "${command}" | wc -l)
 done
