@@ -37,24 +37,18 @@ RUN mkdir /traffic_monitoring
 # tcpdump is added to sbin--any other workaround than this?
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump 
 
-# Copy cron file to the cron.d directory
-COPY traffic_monitoring/traffic_crontab /etc/cron.d/traffic_crontab
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# Give execution rights on the cron job
-RUN chmod 0644 /etc/cron.d/traffic_crontab
-
-# Copy scripts
+# Copy traffic monitoring scripts
 COPY traffic_monitoring/traffic_listener_cron.sh /traffic_monitoring/traffic_listener_cron.sh
-RUN chmod 0744 /traffic_monitoring/traffic_listener_cron.sh
-
 COPY traffic_monitoring/send_email.py /traffic_monitoring/send_email.py
+RUN chmod 0744 /traffic_monitoring/traffic_listener_cron.sh
 RUN chmod 0744 /traffic_monitoring/send_email.py
 
-# Create the log file to be able to run tail
+# Create cron log file 
 RUN touch /var/log/cron.log
-
-# Apply cron job
-RUN crontab /etc/cron.d/traffic_crontab
 
 RUN dpkg --add-architecture i386
 
@@ -79,10 +73,7 @@ RUN ldconfig
 RUN which scamper
 WORKDIR /
 
-ENTRYPOINT ["/revtrvp"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/root.crt", "plvp.config", "-loglevel", "error"]
 
 EXPOSE 4381
-
-# Run the command on container startup
-CMD cron && tail -f /var/log/cron.log
