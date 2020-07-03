@@ -11,7 +11,7 @@ context = ssl.create_default_context()
 port = 465  # For SSL
 
 fromaddr = "reverse.traceroute@gmail.com" 
-password = "P@ssw0rd1."
+password = "" # Temporary: Removed.
 
 toaddr = "egurmeri@gmail.com"
 
