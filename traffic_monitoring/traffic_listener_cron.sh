@@ -23,7 +23,7 @@ if [ -f "${pcapfilename}" ]; then
 	echo "Adding the packet capture script."
     # Send packet capture.
     current_time=$(date "+%Y%m%d_%H%M%S")
-    cp ${pcapfilename} "/var/spool/revtr/traffic/traffic_capture_${current_time}"
+    cp ${pcapfilename} "/var/spool/revtr/traffic/traffic_capture_${current_time}.pcap"
 	#python3 /traffic_monitoring/send_email.py ${pcapfilename}
 fi
 
