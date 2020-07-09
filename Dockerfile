@@ -43,9 +43,9 @@ RUN chmod +x /entrypoint.sh
 
 # Copy traffic monitoring scripts
 COPY traffic_monitoring/traffic_listener_cron.sh /traffic_monitoring/traffic_listener_cron.sh
-COPY traffic_monitoring/send_email.py /traffic_monitoring/send_email.py
+#COPY traffic_monitoring/send_email.py /traffic_monitoring/send_email.py
 RUN chmod 0744 /traffic_monitoring/traffic_listener_cron.sh
-RUN chmod 0744 /traffic_monitoring/send_email.py
+#RUN chmod 0744 /traffic_monitoring/send_email.py
 
 # Create cron log file 
 RUN touch /var/log/cron.log
