@@ -32,6 +32,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strconv"
 	"time"
 
 	dm "github.com/NEU-SNS/revtrvp/datamodel"
@@ -153,16 +154,13 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 		return nil, err
 	}
 	if echo, ok := mess.Body.(*icmp.Echo); ok {
-		if _, errf := logf.WriteString("Checking if ID (" + echo.ID +  ") and SEQ (" + echo.Seq + ") are correct values.\n"); errf != nil {
+		if _, errf := logf.WriteString("Checking if ID (" + strconv.Itoa(echo.ID) +  ") and SEQ (" + strconv.Itoa(echo.Seq) + ") are correct values.\n"); errf != nil {
 			log.Error(errf)
 		}
 		if echo.ID != ID || echo.Seq != SEQ {
 			return nil, ErrorNonSpoofedProbe
 		}
 
-		if _, errf := logf.WriteString("echo.Data = " + echo.Data + "\n"); errf != nil {
-			log.Error(errf)
-		}
 		if len(echo.Data) < 8 {
 			return nil, ErrorSpoofedProbeNoID
 		}
