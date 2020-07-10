@@ -13,7 +13,10 @@ require (
 	github.com/rhansen2/ipv4optparser v0.0.0-20160617172109-7217b1413f4b
 	github.com/sirupsen/logrus v1.4.2
 	golang.org/dl v0.0.0-20200113210548-1b9ab2716afa // indirect
+	golang.org/x/lint v0.0.0-20190313153728-d0100b6bd8b3 // indirect
 	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa
+	golang.org/x/tools v0.0.0-20190524140312-2c0ae7006135 // indirect
 	google.golang.org/grpc v1.26.0
 	gopkg.in/yaml.v2 v2.2.8
+	honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc // indirect
 )
