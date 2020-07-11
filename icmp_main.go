@@ -3,13 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/NEU-SNS/revtrvp/log"
-	"github.com/NEU-SNS/revtrvp/plvp"
 	"github.com/NEU-SNS/revtrvp/util"
 	"net"
-	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	dm "github.com/NEU-SNS/revtrvp/datamodel"
 	opt "github.com/rhansen2/ipv4optparser"
@@ -199,14 +196,14 @@ func reconnect(addr string) (*ipv4.RawConn, error) {
 
 func main(){
 	addr, _ := GetBindAddr()
-	fmt.Println("addr is: " + addr)
+	log.Debug("addr is: " + addr)
 	c, err := reconnect(addr)
 	if err != nil {
 		fmt.Println("error")
 		return
 	}
 	for {
-		fmt.Println("Listening for a new probe.")
+		log.Debug("Listening for a new probe.")
 		getProbe(c)
 	}
 }
