@@ -1,43 +1,16 @@
-/*
- Copyright (c) 2015, Northeastern University
- All rights reserved.
-
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
-     * Redistributions of source code must retain the above copyright
-       notice, this list of conditions and the following disclaimer.
-     * Redistributions in binary form must reproduce the above copyright
-       notice, this list of conditions and the following disclaimer in the
-       documentation and/or other materials provided with the distribution.
-     * Neither the name of the Northeastern University nor the
-       names of its contributors may be used to endorse or promote products
-       derived from this software without specific prior written permission.
-
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- DISCLAIMED. IN NO EVENT SHALL Northeastern University BE LIABLE FOR ANY
- DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-
-// Package plvp is the library for creating a vantage poing on a planet-lab node
-package plvp
+package main
 
 import (
 	"fmt"
+	"github.com/NEU-SNS/revtrvp/log"
+	"github.com/NEU-SNS/revtrvp/util"
 	"net"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	dm "github.com/NEU-SNS/revtrvp/datamodel"
-	"github.com/NEU-SNS/revtrvp/log"
-	"github.com/NEU-SNS/revtrvp/util"
 	opt "github.com/rhansen2/ipv4optparser"
 	"golang.org/x/net/icmp"
 	"golang.org/x/net/ipv4"
@@ -55,24 +28,6 @@ var (
 	icmpProtocolNum = dummy.Protocol()
 )
 
-// SpoofPingMonitor monitors for ICMP echo replies that match the magic numbers
-type SpoofPingMonitor struct {
-	quit chan struct{}
-}
-
-// NewSpoofPingMonitor makes a SpoofPingMonitor
-func NewSpoofPingMonitor() *SpoofPingMonitor {
-	qc := make(chan struct{})
-	return &SpoofPingMonitor{quit: qc}
-}
-
-func reconnect(addr string) (*ipv4.RawConn, error) {
-	pc, err := net.ListenPacket(fmt.Sprintf("ip4:%d", icmpProtocolNum), addr)
-	if err != nil {
-		return nil, err
-	}
-	return ipv4.NewRawConn(pc)
-}
 
 var (
 	// ErrorNotICMPEcho is returned when the probe is not of the right type
@@ -120,7 +75,7 @@ func makeTimestamp(ts opt.TimeStampOption) (dm.TimeStamp, error) {
 	return time, nil
 }
 
-func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
+func getProbe(conn *ipv4.RawConn) (error) {
 	// 1500 should be good because we're sending small packets and its the standard MTU
 
 	pBuf := make([]byte, 1500)
@@ -128,7 +83,7 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 	// Try and get a packet
 	header, pload, _, err := conn.ReadFrom(pBuf)
 	if err != nil {
-		return nil, ErrorReadError
+		return ErrorReadError
 	}
 	now := time.Now().Format("2006_01_02_15_04")
 
@@ -136,29 +91,29 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 	fname := "/var/spool/revtr/traffic/spooflistener_" + now + ".log"
 	logf, errf := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
+	defer logf.Close()
 	if errf != nil {
 		log.Error(errf)
 	}
 
-	defer logf.Close()
 	// Parse the payload for ICMP stuff
 	if _, errf := logf.WriteString("Got packet, parsing payload for ICMP stuff\n"); errf != nil {
 		log.Error(errf)
 	}
 	mess, err := icmp.ParseMessage(icmpProtocolNum, pload)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if echo, ok := mess.Body.(*icmp.Echo); ok {
 		if _, errf := logf.WriteString("Checking if ID (" + strconv.Itoa(echo.ID) +  ") and SEQ (" + strconv.Itoa(echo.Seq) + ") are correct values.\n"); errf != nil {
 			log.Error(errf)
 		}
 		if echo.ID != ID || echo.Seq != SEQ {
-			return nil, ErrorNonSpoofedProbe
+			return ErrorNonSpoofedProbe
 		}
 
 		if len(echo.Data) < 8 {
-			return nil, ErrorSpoofedProbeNoID
+			return ErrorSpoofedProbeNoID
 		}
 		// GetIP of spoofer out of packet
 		ip := net.IPv4(echo.Data[0],
@@ -166,27 +121,30 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 			echo.Data[2],
 			echo.Data[3])
 		if ip == nil {
-			return nil, ErrorNoSpooferIP
+			return ErrorNoSpooferIP
 		}
 		if _, errf := logf.WriteString("get IP of spoofer out of packet: " + ip.String() + "\n" ); errf != nil {
 			log.Error(errf)
 		}
+
 		// Get the Id out of the data
 		id := makeID(echo.Data[4], echo.Data[5], echo.Data[6], echo.Data[7])
 		probe.ProbeId = id
 		probe.SpooferIp, err = util.IPtoInt32(ip)
 		if err != nil {
-			return nil, ErrorSpooferIP
+			return ErrorSpooferIP
 		}
 		probe.Dst, err = util.IPtoInt32(header.Dst)
 		probe.Src, err = util.IPtoInt32(header.Src)
-		if _, errf := logf.WriteString("Src: "  + header.Src.String() + " and Dst: " + header.Dst.String() + "\n"); errf != nil {
+
+		if _, errf := logf.WriteString("Src: "  + header.Src.String() + " and Dst: " + header.Dst.String() + "\n" ); errf != nil {
 			log.Error(errf)
 		}
+
 		// Parse the options
 		options, err := opt.Parse(header.Options)
 		if err != nil {
-			return nil, ErrorFailedToParseOptions
+			return ErrorFailedToParseOptions
 		}
 		probe.SeqNum = uint32(echo.Seq)
 		probe.Id = uint32(echo.ID)
@@ -196,74 +154,91 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 				if _, errf := logf.WriteString("Case RecordRoute\n"); errf != nil {
 					log.Error(errf)
 				}
+
 				rr, err := option.ToRecordRoute()
 				if err != nil {
-					return nil, ErrorFailedToConvertOption
+					return ErrorFailedToConvertOption
 				}
 				rec, err := makeRecordRoute(rr)
 				if err != nil {
-					return nil, ErrorFailedToConvertOption
+					return ErrorFailedToConvertOption
 				}
 				probe.RR = &rec
 			case opt.InternetTimestamp:
 				if _, errf := logf.WriteString("Case Timestamp\n"); errf != nil {
 					log.Error(errf)
 				}
+
 				ts, err := option.ToTimeStamp()
 				if err != nil {
-					return nil, ErrorFailedToConvertOption
+					return ErrorFailedToConvertOption
 				}
 				nts, err := makeTimestamp(ts)
 				if err != nil {
-					return nil, ErrorFailedToConvertOption
+					return ErrorFailedToConvertOption
 				}
 				probe.Ts = &nts
 			}
 		}
-		return probe, nil
 	}
-	return nil, ErrorNotICMPEcho
+	return ErrorNotICMPEcho
 }
 
-func (sm *SpoofPingMonitor) poll(addr string, probes chan<- dm.Probe, ec chan error) {
+// GetBindAddr gets the IP of the eth0 like address
+// (!!MLab specific!!: use net1 because eth0 is private)
+func GetBindAddr() (string, error) {
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return "", err
+	}
+	for _, iface := range ifaces {
+		if strings.Contains(iface.Name, "net1") &&
+			uint(iface.Flags)&uint(net.FlagUp) > 0 {
+			addrs, err := iface.Addrs()
+			if err != nil {
+				return "", err
+			}
+			addr := addrs[0]
+			ip, _, err := net.ParseCIDR(addr.String())
+			if err != nil {
+				return "", err
+			}
+			return ip.String(), nil
+		}
+	}
+	return "", fmt.Errorf("Didn't find net1 interface")
+}
+
+func reconnect(addr string) (*ipv4.RawConn, error) {
+	pc, err := net.ListenPacket(fmt.Sprintf("ip4:%d", icmpProtocolNum), addr)
+	if err != nil {
+		return nil, err
+	}
+	return ipv4.NewRawConn(pc)
+}
+
+func main(){
+	addr, _ := GetBindAddr()
+	now := time.Now().Format("2006_01_02_15_04")
+	fname := "/var/spool/revtr/traffic/addr_config" + now
+	logf, errf := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+
+	defer logf.Close()
+
+	if errf != nil {
+		log.Error(errf)
+	}
+
+	if _, errf := logf.WriteString("addr is: " + addr); errf != nil {
+		log.Error(errf)
+	}
 	c, err := reconnect(addr)
 	if err != nil {
-		ec <- err
+		fmt.Println("error")
 		return
 	}
 	for {
-		select {
-		case <-sm.quit:
-			err = c.Close()
-			if err != nil {
-				log.Error(err)
-			}
-			return
-		default:
-			var pr *dm.Probe
-			if pr, err = getProbe(c); err != nil {
-				ec <- err
-				switch err {
-				case ErrorReadError:
-					c, err = reconnect(addr)
-					if err != nil {
-						ec <- err
-						return
-					}
-				}
-				continue
-			}
-			probes <- *pr
-		}
+		fmt.Println("Listening for a new probe.")
+		getProbe(c)
 	}
-}
-
-// Start the SpoofPingMonitor
-func (sm *SpoofPingMonitor) Start(addr string, probes chan<- dm.Probe, ec chan error) {
-	go sm.poll(addr, probes, ec)
-}
-
-// Quit shuts down the monitor
-func (sm *SpoofPingMonitor) Quit() {
-	close(sm.quit)
 }
