@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/NEU-SNS/revtrvp/log"
 	"github.com/NEU-SNS/revtrvp/util"
 	"net"
+	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	dm "github.com/NEU-SNS/revtrvp/datamodel"
 	opt "github.com/rhansen2/ipv4optparser"
@@ -75,8 +78,21 @@ func makeTimestamp(ts opt.TimeStampOption) (dm.TimeStamp, error) {
 func getProbe(conn *ipv4.RawConn) (error) {
 	// 1500 should be good because we're sending small packets and its the standard MTU
 
-	fmt.Println("Inside getProbe, trying to get a packet\n")
+	// 1500 should be good because we're sending small packets and its the standard MTU
 
+	now := time.Now().Format("2006_01_02_15_04")
+
+	// Directory structure is MLab specific, where MLab's Pusher service sends everything to Google Cloud Storage.
+	fname := "/var/spool/revtr/traffic/spooflistener_" + now + ".log"
+	logf, errf := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+
+	if errf != nil {
+		log.Error(errf)
+	}
+
+	if _, errf := logf.WriteString("Inside getProbe, trying to get a packet\n"); errf != nil {
+		log.Error(errf)
+	}
 	pBuf := make([]byte, 1500)
 	probe := &dm.Probe{}
 	// Try and get a packet
@@ -85,14 +101,17 @@ func getProbe(conn *ipv4.RawConn) (error) {
 		return ErrorReadError
 	}
 	// Parse the payload for ICMP stuff
-	fmt.Println("Got packet, parsing payload for ICMP stuff\n")
+	if _, errf := logf.WriteString("Got packet, parsing payload for ICMP stuff\n"); errf != nil {
+		log.Error(errf)
+	}
 	mess, err := icmp.ParseMessage(icmpProtocolNum, pload)
 	if err != nil {
 		return err
 	}
 	if echo, ok := mess.Body.(*icmp.Echo); ok {
-		fmt.Println("Checking if ID (" + strconv.Itoa(echo.ID) +  ") and SEQ (" + strconv.Itoa(echo.Seq) + ") are correct values.\n")
-
+		if _, errf := logf.WriteString("Checking if ID (" + strconv.Itoa(echo.ID) +  ") and SEQ (" + strconv.Itoa(echo.Seq) + ") are correct values.\n"); errf != nil {
+			log.Error(errf)
+		}
 		if echo.ID != ID || echo.Seq != SEQ {
 			return ErrorNonSpoofedProbe
 		}
@@ -108,7 +127,9 @@ func getProbe(conn *ipv4.RawConn) (error) {
 		if ip == nil {
 			return ErrorNoSpooferIP
 		}
-		fmt.Println("get IP of spoofer out of packet: " + ip.String() + "\n" )
+		if _, errf := logf.WriteString("get IP of spoofer out of packet: " + ip.String() + "\n" ); errf != nil {
+			log.Error(errf)
+		}
 
 		// Get the Id out of the data
 		id := makeID(echo.Data[4], echo.Data[5], echo.Data[6], echo.Data[7])
@@ -119,7 +140,10 @@ func getProbe(conn *ipv4.RawConn) (error) {
 		}
 		probe.Dst, err = util.IPtoInt32(header.Dst)
 		probe.Src, err = util.IPtoInt32(header.Src)
-		fmt.Println("Src: "  + header.Src.String() + " and Dst: " + header.Dst.String() + "\n")
+
+		if _, errf := logf.WriteString("Src: "  + header.Src.String() + " and Dst: " + header.Dst.String() + "\n" ); errf != nil {
+			log.Error(errf)
+		}
 
 		// Parse the options
 		options, err := opt.Parse(header.Options)
@@ -131,7 +155,9 @@ func getProbe(conn *ipv4.RawConn) (error) {
 		for _, option := range options {
 			switch option.Type {
 			case opt.RecordRoute:
-				fmt.Println("Case RecordRoute\n")
+				if _, errf := logf.WriteString("Case RecordRoute\n"); errf != nil {
+					log.Error(errf)
+				}
 
 				rr, err := option.ToRecordRoute()
 				if err != nil {
@@ -143,7 +169,9 @@ func getProbe(conn *ipv4.RawConn) (error) {
 				}
 				probe.RR = &rec
 			case opt.InternetTimestamp:
-				fmt.Println("Case Timestamp\n")
+				if _, errf := logf.WriteString("Case Timestamp\n"); errf != nil {
+					log.Error(errf)
+				}
 
 				ts, err := option.ToTimeStamp()
 				if err != nil {
