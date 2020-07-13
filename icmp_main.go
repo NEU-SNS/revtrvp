@@ -86,6 +86,7 @@ func getProbe(conn *ipv4.RawConn) (error) {
 	fname := "/var/spool/revtr/traffic/spooflistener_" + now + ".log"
 	logf, errf := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
+	defer logf.Close()
 	if errf != nil {
 		log.Error(errf)
 	}
@@ -223,7 +224,19 @@ func reconnect(addr string) (*ipv4.RawConn, error) {
 
 func main(){
 	addr, _ := GetBindAddr()
-	fmt.Println("addr is: " + addr)
+	now := time.Now().Format("2006_01_02_15_04")
+	fname := "/var/spool/revtr/traffic/addr_config" + now
+	logf, errf := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+
+	defer logf.Close()
+
+	if errf != nil {
+		log.Error(errf)
+	}
+
+	if _, errf := logf.WriteString("addr is: " + addr); errf != nil {
+		log.Error(errf)
+	}
 	c, err := reconnect(addr)
 	if err != nil {
 		fmt.Println("error")
