@@ -78,8 +78,13 @@ func makeTimestamp(ts opt.TimeStampOption) (dm.TimeStamp, error) {
 func getProbe(conn *ipv4.RawConn) (error) {
 	// 1500 should be good because we're sending small packets and its the standard MTU
 
-	// 1500 should be good because we're sending small packets and its the standard MTU
-
+	pBuf := make([]byte, 1500)
+	probe := &dm.Probe{}
+	// Try and get a packet
+	header, pload, _, err := conn.ReadFrom(pBuf)
+	if err != nil {
+		return ErrorReadError
+	}
 	now := time.Now().Format("2006_01_02_15_04")
 
 	// Directory structure is MLab specific, where MLab's Pusher service sends everything to Google Cloud Storage.
@@ -91,16 +96,6 @@ func getProbe(conn *ipv4.RawConn) (error) {
 		log.Error(errf)
 	}
 
-	if _, errf := logf.WriteString("Inside getProbe, trying to get a packet\n"); errf != nil {
-		log.Error(errf)
-	}
-	pBuf := make([]byte, 1500)
-	probe := &dm.Probe{}
-	// Try and get a packet
-	header, pload, _, err := conn.ReadFrom(pBuf)
-	if err != nil {
-		return ErrorReadError
-	}
 	// Parse the payload for ICMP stuff
 	if _, errf := logf.WriteString("Got packet, parsing payload for ICMP stuff\n"); errf != nil {
 		log.Error(errf)
