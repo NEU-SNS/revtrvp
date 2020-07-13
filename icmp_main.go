@@ -192,7 +192,7 @@ func GetBindAddr() (string, error) {
 		return "", err
 	}
 	for _, iface := range ifaces {
-		if strings.Contains(iface.Name, "eth0") &&
+		if strings.Contains(iface.Name, "net1") &&
 			uint(iface.Flags)&uint(net.FlagUp) > 0 {
 			addrs, err := iface.Addrs()
 			if err != nil {
