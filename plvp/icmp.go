@@ -145,6 +145,8 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 	if _, errf := logf.WriteString("Got packet, parsing payload for ICMP stuff\n"); errf != nil {
 		log.Error(errf)
 	}
+	log.Debug("Got packet, parsing payload for ICMP stuff")
+
 	mess, err := icmp.ParseMessage(icmpProtocolNum, pload)
 	if err != nil {
 		return nil, err
@@ -253,6 +255,20 @@ func (sm *SpoofPingMonitor) poll(addr string, probes chan<- dm.Probe, ec chan er
 				}
 				continue
 			}
+			lgg := "getProbe returned: src= "
+			srcs, _ := util.Int32ToIPString(pr.Src)
+			dsts, _ := util.Int32ToIPString(pr.Dst)
+			lgg += srcs
+			lgg += " dst= "
+			lgg += dsts
+			for _, hop := range pr.RR.Hops {
+				hopstr, _ := util.Int32ToIPString(hop)
+				lgg += hopstr + " "
+			}
+
+			log.Debug(lgg)
+			fmt.Println(lgg)
+
 			probes <- *pr
 		}
 	}
