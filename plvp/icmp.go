@@ -145,13 +145,14 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 	if _, errf := logf.WriteString("Got packet, parsing payload for ICMP stuff\n"); errf != nil {
 		log.Error(errf)
 	}
-	log.Debug("Got packet, parsing payload for ICMP stuff")
+	fmt.Printf("Got packet, parsing payload for ICMP stuff")
 
 	mess, err := icmp.ParseMessage(icmpProtocolNum, pload)
 	if err != nil {
 		return nil, err
 	}
 	if echo, ok := mess.Body.(*icmp.Echo); ok {
+		fmt.Printf("Checking if ID (" + strconv.Itoa(echo.ID) +  ") and SEQ (" + strconv.Itoa(echo.Seq) + ") are correct values.\n")
 		if _, errf := logf.WriteString("Checking if ID (" + strconv.Itoa(echo.ID) +  ") and SEQ (" + strconv.Itoa(echo.Seq) + ") are correct values.\n"); errf != nil {
 			log.Error(errf)
 		}
@@ -170,6 +171,7 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 		if ip == nil {
 			return nil, ErrorNoSpooferIP
 		}
+		fmt.Printf("get IP of spoofer out of packet: " + ip.String() + "\n" )
 		if _, errf := logf.WriteString("get IP of spoofer out of packet: " + ip.String() + "\n" ); errf != nil {
 			log.Error(errf)
 		}
@@ -182,6 +184,7 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 		}
 		probe.Dst, err = util.IPtoInt32(header.Dst)
 		probe.Src, err = util.IPtoInt32(header.Src)
+		fmt.Printf("Src: "  + header.Src.String() + " and Dst: " + header.Dst.String() + "\n")
 		if _, errf := logf.WriteString("Src: "  + header.Src.String() + " and Dst: " + header.Dst.String() + "\n"); errf != nil {
 			log.Error(errf)
 		}
@@ -195,6 +198,7 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 		for _, option := range options {
 			switch option.Type {
 			case opt.RecordRoute:
+				fmt.Printf("Case ReordRoute\n")
 				if _, errf := logf.WriteString("Case RecordRoute\n"); errf != nil {
 					log.Error(errf)
 				}
@@ -208,6 +212,7 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 				}
 				probe.RR = &rec
 			case opt.InternetTimestamp:
+				fmt.Printf("Case Timestamp\n")
 				if _, errf := logf.WriteString("Case Timestamp\n"); errf != nil {
 					log.Error(errf)
 				}
