@@ -76,7 +76,7 @@ func init() {
 	}
 }
 
-func main_x() {
+func main() {
 	go sigHandle()
 	err := config.Parse(flag.CommandLine, &conf)
 	if err != nil {
