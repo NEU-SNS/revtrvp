@@ -127,6 +127,8 @@ func getProbe(conn *ipv4.RawConn) (error) {
 			log.Error(errf)
 		}
 
+		log.Debug("Got packet, parsing payload for ICMP stuff")
+
 		// Get the Id out of the data
 		id := makeID(echo.Data[4], echo.Data[5], echo.Data[6], echo.Data[7])
 		probe.ProbeId = id
