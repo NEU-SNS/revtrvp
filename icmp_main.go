@@ -217,7 +217,7 @@ func reconnect(addr string) (*ipv4.RawConn, error) {
 	return ipv4.NewRawConn(pc)
 }
 
-func main(){
+func main_x(){
 	addr, _ := GetBindAddr()
 	now := time.Now().Format("2006_01_02_15_04")
 	fname := "/var/spool/revtr/traffic/addr_config" + now
