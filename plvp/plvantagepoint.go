@@ -92,7 +92,6 @@ type PLControllerSender struct {
 
 func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 
-	fmt.Printf("Sending back to plcontroller")
 	for _, p := range ps {
 		srcs, _ := util.Int32ToIPString(p.Src)
 		dsts, _ := util.Int32ToIPString(p.Dst)
@@ -103,8 +102,8 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 			hopstr, _ := util.Int32ToIPString(hop)
 			lgg += hopstr + " "
 		}
-		fmt.Println(lgg)
-		log.Debug(lgg)
+		fmt.Println("Sending back to controller: " + lgg)
+
 	}
 	if cs.conn == nil {
 		_, srvs, err := net.LookupSRV("plcontroller", "tcp", "revtr.ccs.neu.edu")
@@ -122,11 +121,14 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 		}
 		cs.conn = cc
 	}
-
+	fmt.Println("Establishing PLController conn...")
 	client := plc.NewPLControllerClient(cs.conn)
+	fmt.Println("PLController conn established.")
 	contx, cancel := ctx.WithTimeout(ctx.Background(), time.Second*2)
 	defer cancel()
+	fmt.Println("calling AcceptProbes to server")
 	_, err := client.AcceptProbes(contx, &dm.SpoofedProbes{Probes: ps})
+	fmt.Println(err)
 	return err
 }
 
