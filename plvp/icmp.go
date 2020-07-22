@@ -145,7 +145,7 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 	if _, errf := logf.WriteString("Got packet, parsing payload for ICMP stuff\n"); errf != nil {
 		log.Error(errf)
 	}
-	fmt.Printf("Got packet, parsing payload for ICMP stuff")
+	fmt.Printf("Got packet, parsing payload for ICMP stuff\n")
 
 	mess, err := icmp.ParseMessage(icmpProtocolNum, pload)
 	if err != nil {
