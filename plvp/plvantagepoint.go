@@ -125,7 +125,9 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 	client := plc.NewPLControllerClient(cs.conn)
 	contx, cancel := ctx.WithTimeout(ctx.Background(), time.Second*2)
 	defer cancel()
+	fmt.Println("calling client.AcceptProbes to server")
 	_, err := client.AcceptProbes(contx, &dm.SpoofedProbes{Probes: ps})
+	fmt.Println(err)
 	return err
 }
 
