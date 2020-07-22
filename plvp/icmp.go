@@ -260,6 +260,7 @@ func (sm *SpoofPingMonitor) poll(addr string, probes chan<- dm.Probe, ec chan er
 				}
 				continue
 			}
+
 			lgg := "getProbe returned: src= "
 			srcs, _ := util.Int32ToIPString(pr.Src)
 			dsts, _ := util.Int32ToIPString(pr.Dst)
@@ -268,14 +269,12 @@ func (sm *SpoofPingMonitor) poll(addr string, probes chan<- dm.Probe, ec chan er
 			lgg += dsts
 			if pr.GetRR() != nil  {
 				if pr.GetRR().GetHops() != nil {
-					for _, hop := range pr.GetRR().Hops {
+					for _, hop := range pr.GetRR().GetHops() {
 						hopstr, _ := util.Int32ToIPString(hop)
 						lgg += hopstr + " "
 					}
 				}
 			}
-
-			log.Debug(lgg)
 			fmt.Println(lgg)
 
 			probes <- *pr
