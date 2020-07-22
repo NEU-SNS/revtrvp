@@ -98,12 +98,16 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 		lgg := "Probe src: " + srcs + " dst: " + dsts
 		lgg += " RR hops:"
 
-		for _, hop := range p.RR.Hops {
-			hopstr, _ := util.Int32ToIPString(hop)
-			lgg += hopstr + " "
+		if p.GetRR() != nil  {
+			if p.GetRR().GetHops() != nil {
+				for _, hop := range p.GetRR().GetHops() {
+					hopstr, _ := util.Int32ToIPString(hop)
+					lgg += hopstr + " "
+				}
+			}
 		}
-		fmt.Println("Sending back to controller: " + lgg)
 
+		fmt.Println("Sending back to controller: " + lgg)
 	}
 	if cs.conn == nil {
 		_, srvs, err := net.LookupSRV("plcontroller", "tcp", "revtr.ccs.neu.edu")
