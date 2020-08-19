@@ -27,28 +27,28 @@ FROM ubuntu:18.04
 
 RUN apt-get update
 RUN apt-get install -y tcpdump 
-RUN apt-get -y install cron 
+#RUN apt-get -y install cron 
 RUN apt-get -y install python3
 RUN apt-get -y install ca-certificates
 
 # All code/tools for traffic monitoring go here
-RUN mkdir /traffic_monitoring
+#RUN mkdir /traffic_monitoring
 
 # tcpdump is added to sbin--any other workaround than this?
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump 
 
 # Copy entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+#COPY entrypoint.sh /entrypoint.sh
+#RUN chmod +x /entrypoint.sh
 
 # Copy traffic monitoring scripts
-COPY traffic_monitoring/traffic_listener_cron.sh /traffic_monitoring/traffic_listener_cron.sh
+#COPY traffic_monitoring/traffic_listener_cron.sh /traffic_monitoring/traffic_listener_cron.sh
 #COPY traffic_monitoring/send_email.py /traffic_monitoring/send_email.py
-RUN chmod 0744 /traffic_monitoring/traffic_listener_cron.sh
+#RUN chmod 0744 /traffic_monitoring/traffic_listener_cron.sh
 #RUN chmod 0744 /traffic_monitoring/send_email.py
 
 # Create cron log file 
-RUN touch /var/log/cron.log
+#RUN touch /var/log/cron.log
 
 RUN dpkg --add-architecture i386
 
@@ -73,7 +73,7 @@ RUN ldconfig
 RUN which scamper
 WORKDIR /
 
-ENTRYPOINT ["/entrypoint.sh"]
+#ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/root.crt", "plvp.config", "-loglevel", "error"]
 
 EXPOSE 4381
