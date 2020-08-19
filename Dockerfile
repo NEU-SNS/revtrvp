@@ -73,7 +73,7 @@ RUN ldconfig
 RUN which scamper
 WORKDIR /
 
-#ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/revtrvp"]
 CMD ["/root.crt", "plvp.config", "-loglevel", "error"]
 
 EXPOSE 4381
