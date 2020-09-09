@@ -130,7 +130,7 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 	if err != nil {
 		return nil, ErrorReadError
 	}
-	now := time.Now().Format("2006_01_02_15_04")
+	//now := time.Now().Format("2006_01_02_15_04")
 
 	// Directory structure is MLab specific, where MLab's Pusher service sends everything to Google Cloud Storage.
 	//fname := "/var/spool/revtr/traffic/spooflistener_" + now + ".log"
