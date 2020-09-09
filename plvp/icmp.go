@@ -31,9 +31,7 @@ package plvp
 import (
 	"fmt"
 	"net"
-	"os"
 	"strconv"
-	"time"
 
 	dm "github.com/NEU-SNS/revtrvp/datamodel"
 	"github.com/NEU-SNS/revtrvp/log"
