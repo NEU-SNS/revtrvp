@@ -130,21 +130,21 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 	if err != nil {
 		return nil, ErrorReadError
 	}
-	now := time.Now().Format("2006_01_02_15_04")
+	//now := time.Now().Format("2006_01_02_15_04")
 
 	// Directory structure is MLab specific, where MLab's Pusher service sends everything to Google Cloud Storage.
-	fname := "/var/spool/revtr/traffic/spooflistener_" + now + ".log"
-	logf, errf := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	//fname := "/var/spool/revtr/traffic/spooflistener_" + now + ".log"
+	//logf, errf := os.OpenFile(fname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
-	if errf != nil {
-		log.Error(errf)
-	}
+	//if errf != nil {
+	//	log.Error(errf)
+	//}
 
-	defer logf.Close()
+	//defer logf.Close()
 	// Parse the payload for ICMP stuff
-	if _, errf := logf.WriteString("Got packet, parsing payload for ICMP stuff\n"); errf != nil {
-		log.Error(errf)
-	}
+	//if _, errf := logf.WriteString("Got packet, parsing payload for ICMP stuff\n"); errf != nil {
+	//	log.Error(errf)
+	//}
 	fmt.Printf("Got packet, parsing payload for ICMP stuff\n")
 
 	mess, err := icmp.ParseMessage(icmpProtocolNum, pload)
@@ -153,9 +153,9 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 	}
 	if echo, ok := mess.Body.(*icmp.Echo); ok {
 		fmt.Printf("Checking if ID (" + strconv.Itoa(echo.ID) +  ") and SEQ (" + strconv.Itoa(echo.Seq) + ") are correct values.\n")
-		if _, errf := logf.WriteString("Checking if ID (" + strconv.Itoa(echo.ID) +  ") and SEQ (" + strconv.Itoa(echo.Seq) + ") are correct values.\n"); errf != nil {
-			log.Error(errf)
-		}
+	//	if _, errf := logf.WriteString("Checking if ID (" + strconv.Itoa(echo.ID) +  ") and SEQ (" + strconv.Itoa(echo.Seq) + ") are correct values.\n"); errf != nil {
+	//		log.Error(errf)
+	//	}
 		if echo.ID != ID || echo.Seq != SEQ {
 			return nil, ErrorNonSpoofedProbe
 		}
@@ -172,9 +172,9 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 			return nil, ErrorNoSpooferIP
 		}
 		fmt.Printf("get IP of spoofer out of packet: " + ip.String() + "\n" )
-		if _, errf := logf.WriteString("get IP of spoofer out of packet: " + ip.String() + "\n" ); errf != nil {
-			log.Error(errf)
-		}
+	//	if _, errf := logf.WriteString("get IP of spoofer out of packet: " + ip.String() + "\n" ); errf != nil {
+	//		log.Error(errf)
+	//	}
 		// Get the Id out of the data
 		id := makeID(echo.Data[4], echo.Data[5], echo.Data[6], echo.Data[7])
 		probe.ProbeId = id
@@ -185,9 +185,9 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 		probe.Dst, err = util.IPtoInt32(header.Dst)
 		probe.Src, err = util.IPtoInt32(header.Src)
 		fmt.Printf("Src: "  + header.Src.String() + " and Dst: " + header.Dst.String() + "\n")
-		if _, errf := logf.WriteString("Src: "  + header.Src.String() + " and Dst: " + header.Dst.String() + "\n"); errf != nil {
-			log.Error(errf)
-		}
+	//	if _, errf := logf.WriteString("Src: "  + header.Src.String() + " and Dst: " + header.Dst.String() + "\n"); errf != nil {
+	//		log.Error(errf)
+	//	}
 		// Parse the options
 		options, err := opt.Parse(header.Options)
 		if err != nil {
@@ -199,9 +199,9 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 			switch option.Type {
 			case opt.RecordRoute:
 				fmt.Printf("Case ReordRoute\n")
-				if _, errf := logf.WriteString("Case RecordRoute\n"); errf != nil {
-					log.Error(errf)
-				}
+	//			if _, errf := logf.WriteString("Case RecordRoute\n"); errf != nil {
+	//				log.Error(errf)
+	//			}
 				rr, err := option.ToRecordRoute()
 				if err != nil {
 					return nil, ErrorFailedToConvertOption
@@ -213,9 +213,9 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 				probe.RR = &rec
 			case opt.InternetTimestamp:
 				fmt.Printf("Case Timestamp\n")
-				if _, errf := logf.WriteString("Case Timestamp\n"); errf != nil {
-					log.Error(errf)
-				}
+	//			if _, errf := logf.WriteString("Case Timestamp\n"); errf != nil {
+	//				log.Error(errf)
+	//			}
 				ts, err := option.ToTimeStamp()
 				if err != nil {
 					return nil, ErrorFailedToConvertOption
