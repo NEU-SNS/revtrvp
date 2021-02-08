@@ -215,7 +215,8 @@ func (vp *plVantagepointT) run(c Config, s SendCloser, ec chan error) {
 		return
 	}
 	vp.monec = make(chan error, 1)
-	vp.monip = make(chan dm.Probe, 100)
+	// Increase the size of the spoofing monitoring chanel
+	vp.monip = make(chan dm.Probe, 100000)
 	go vp.spoofmon.Start(monaddr, plVantagepoint.monip, plVantagepoint.monec)
 	go vp.monitorSpoofedPings(plVantagepoint.monip, plVantagepoint.monec)
 	if *c.Local.StartScamp {
@@ -253,7 +254,7 @@ func (vp *plVantagepointT) monitorSpoofedPings(probes chan dm.Probe, ec chan err
 				case ErrorNotICMPEcho, ErrorNonSpoofedProbe:
 					continue
 				}
-			case <-time.After(2 * time.Second):
+			case <-time.After(1 * time.Second):
 				vp.send.Send(sprobes)
 				sprobes = make([]*dm.Probe, 0)
 			}
