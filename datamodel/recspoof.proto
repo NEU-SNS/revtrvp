@@ -38,6 +38,7 @@ message Probe {
     RecordRoute r_r   =  8;
     TimeStamp ts      =  9; 
     uint32 sender_ip  = 10;
+    int64 received_timestamp = 11;
 }
 
 message RecordRoute {
