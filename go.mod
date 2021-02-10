@@ -4,7 +4,8 @@ go 1.13
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/golang/protobuf v1.4.3
+	github.com/golang/protobuf v1.3.2
+	github.com/google/go-cmp v0.5.0 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/prometheus/client_golang v0.0.0-20160531091528-488edd04dc22
 	github.com/prometheus/common v0.0.0-20160607094339-3a184ff7dfd4 // indirect
@@ -17,7 +18,6 @@ require (
 	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa
 	golang.org/x/tools v0.0.0-20190524140312-2c0ae7006135 // indirect
 	google.golang.org/grpc v1.27.0
-	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/yaml.v2 v2.2.8
 	honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc // indirect
 )
