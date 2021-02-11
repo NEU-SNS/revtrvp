@@ -251,6 +251,7 @@ func Start(c Config, s SendCloser) chan error {
 
 func (vp *plVantagepointT) monitorSpoofedPings(probes chan dm.Probe, ec chan error) {
 	var sprobes []*dm.Probe
+	ticker := time.NewTicker(time.Second)
 	go func() {
 		for {
 			select {
@@ -262,7 +263,7 @@ func (vp *plVantagepointT) monitorSpoofedPings(probes chan dm.Probe, ec chan err
 				case ErrorNotICMPEcho, ErrorNonSpoofedProbe:
 					continue
 				}
-			case <-time.After(1 * time.Second):
+			case <-ticker.C:
 				vp.send.Send(sprobes)
 				sprobes = make([]*dm.Probe, 0)
 			}
