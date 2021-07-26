@@ -30,6 +30,7 @@ package plvp
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"net"
 	"os"
@@ -284,5 +285,5 @@ func pickIP(host string) (string, error) {
 func (vp *plVantagepointT) startScamperProcs() {
 	log.Info("Starting scamper procs")
 	sp := scamper.GetVPProc(vp.sc.ScPath, vp.sc.IP, vp.sc.Port)
-	vp.mp.ManageProcess(sp, true, 10000)
+	vp.mp.ManageProcess(sp, true, math.MaxUint32)
 }

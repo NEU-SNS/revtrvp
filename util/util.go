@@ -237,19 +237,54 @@ func GetBindAddr() (string, error) {
 		return "", err
 	}
 	for _, iface := range ifaces {
+
 		if strings.Contains(iface.Name, "net1") &&
+		// if strings.Contains(iface.Name, "en7") &&
 				uint(iface.Flags)&uint(net.FlagUp) > 0 {
 			addrs, err := iface.Addrs()
 			if err != nil {
 				return "", err
 			}
-			addr := addrs[0]
-			ip, _, err := net.ParseCIDR(addr.String())
-			if err != nil {
-				return "", err
+			for _, addr := range (addrs){
+				// addr := addrs[0]
+				addressType := checkIPAddressType(addr.String())
+				if addressType != IPv4AddressType {
+					continue
+				}
+				ip, _, err := net.ParseCIDR(addr.String())
+				if err != nil {
+					return "", err
+				}
+				return ip.String(), nil
 			}
-			return ip.String(), nil
 		}
 	}
 	return "", fmt.Errorf("Didn't find net1 interface")
+}
+
+type AddressType string
+
+const (
+	IPv4AddressType AddressType = "IPv4"
+	IPv6AddressType AddressType = "IPv6"
+	InvalidAddressType AddressType = "Invalid"
+) 
+
+func checkIPAddressType(addr string) AddressType {
+	ip, _, err := net.ParseCIDR(addr)
+    if err != nil {
+        fmt.Printf("Invalid IP Address: %s\n", ip)
+        return InvalidAddressType
+    }
+    for i := 0; i < len(addr); i++ {
+        switch addr[i] {
+        case '.':
+            fmt.Printf("Given IP Address %s is IPV4 type\n", ip)
+            return IPv4AddressType
+        case ':':
+            fmt.Printf("Given IP Address %s is IPV6 type\n", ip)
+            return IPv6AddressType
+        }
+    }
+	return InvalidAddressType
 }
