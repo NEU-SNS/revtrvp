@@ -1,15 +1,5 @@
-FROM golang:1.13 as build_revtrvp
-ADD . /go/src/github.com/NEU-SNS/revtrvp
-WORKDIR /go/src/github.com/NEU-SNS/revtrvp
-RUN go build -o revtrvp .
-RUN chmod -R a+rx /go/src/github.com/NEU-SNS/revtrvp/revtrvp
 
 FROM ubuntu:18.04 as build_scamper
-
-RUN apt-get update && \
-    apt-get install -y make coreutils autoconf libtool git build-essential wget && \
-    apt-get clean && \
-    rm -rf /var/lib/opt/lists/*
 
 RUN ls -l
 RUN mkdir -p scamper-src && cd scamper-src && \
@@ -17,13 +7,6 @@ RUN mkdir -p scamper-src && cd scamper-src && \
     tar xzf scamper.tar.gz && cd scamper-cvs-20150901
 WORKDIR /scamper-src/scamper-cvs-20150901/
 RUN ./configure && make install
-
-
-#WORKDIR /plvp
-#COPY . /plvp
-
-#RUN useradd -ms /bin/bash plvp
-FROM ubuntu:18.04
 
 RUN apt-get update
 RUN apt-get install -y tcpdump 
@@ -63,6 +46,26 @@ RUN apt-get update && apt-get install -y \
     init-system-helpers \
 &&  apt-get clean \
 &&  rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    apt-get install -y make coreutils autoconf libtool git build-essential wget && \
+    apt-get clean && \
+    rm -rf /var/lib/opt/lists/*
+
+FROM golang:1.13 as build_revtrvp
+ADD . /go/src/github.com/NEU-SNS/revtrvp
+WORKDIR /go/src/github.com/NEU-SNS/revtrvp
+RUN go build -o revtrvp .
+RUN chmod -R a+rx /go/src/github.com/NEU-SNS/revtrvp/revtrvp
+
+
+#WORKDIR /plvp
+#COPY . /plvp
+
+#RUN useradd -ms /bin/bash plvp
+FROM ubuntu:18.04
+
+
 
 COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/revtrvp /
 COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/root.crt /

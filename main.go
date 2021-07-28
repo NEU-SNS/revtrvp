@@ -77,6 +77,7 @@ func init() {
 }
 
 func main() {
+
 	go sigHandle()
 	err := config.Parse(flag.CommandLine, &conf)
 	if err != nil {
@@ -106,6 +107,9 @@ func main() {
 		log.Errorf("PLVP Start returned with error: %v", err)
 		exit(1)
 	}
+
+
+	
 }
 
 func exit(status int) {
