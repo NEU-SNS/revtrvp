@@ -44,6 +44,8 @@ func init() {
 		"Prints the current version")
 	flag.StringVar(conf.Local.Addr, "a", ":65000",
 		"The address to run the local service on")
+	flag.StringVar(conf.Local.Interface, "i", "net1", 
+		"The network interface used by the plvp to connect to the plcontroller")
 	flag.BoolVar(conf.Local.CloseStdDesc, "d", false,
 		"Close std file descripters")
 	flag.BoolVar(conf.Local.AutoConnect, "auto-connect", false,

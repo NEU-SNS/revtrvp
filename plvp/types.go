@@ -53,6 +53,7 @@ type LocalConfig struct {
 	StartScamp   *bool   `flag:"start-scamper"`
 	Host         *string `flag:"host"`
 	RootCA       *string `flag:"root-ca"`
+	Interface    *string `flag:"interface"`
 }
 
 // ScamperConfig represents the scamper configuration options
@@ -76,6 +77,7 @@ func NewConfig() Config {
 		Host:         new(string),
 		Port:         new(int),
 		RootCA:       new(string),
+		Interface:    new(string),
 	}
 	sc := ScamperConfig{
 		Port:    new(string),

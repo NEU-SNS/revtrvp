@@ -231,14 +231,15 @@ func MicroToNanoSec(usec int64) int64 {
 
 // GetBindAddr gets the IP of the eth0 like address 
 // (!!MLab specific!!: use net1 because eth0 is private)
-func GetBindAddr() (string, error) {
+func GetBindAddr(netInterface string) (string, error) {
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		return "", err
 	}
 	for _, iface := range ifaces {
-
-		if strings.Contains(iface.Name, "net1") &&
+		
+		if strings.Contains(iface.Name, netInterface) &&
+		// if strings.Contains(iface.Name, "net1") &&
 		// if strings.Contains(iface.Name, "en7") &&
 				uint(iface.Flags)&uint(net.FlagUp) > 0 {
 			addrs, err := iface.Addrs()
@@ -259,7 +260,7 @@ func GetBindAddr() (string, error) {
 			}
 		}
 	}
-	return "", fmt.Errorf("Didn't find net1 interface")
+	return "", fmt.Errorf("Didn't find %s interface", netInterface)
 }
 
 type AddressType string

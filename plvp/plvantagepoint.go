@@ -216,7 +216,7 @@ func (vp *plVantagepointT) run(c Config, s SendCloser, ec chan error) {
 	vp.sc = *con
 	vp.mp = mproc.New()
 	vp.spoofmon = NewSpoofPingMonitor()
-	monaddr, err := util.GetBindAddr()
+	monaddr, err := util.GetBindAddr(*vp.config.Local.Interface)
 	if err != nil {
 		log.Errorf("Could not get bind addr: %v", err)
 		vp.stop()
