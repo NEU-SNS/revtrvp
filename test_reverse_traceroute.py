@@ -2,26 +2,35 @@ from typing import Reversible
 import requests
 import sys
 import argparse
+import time
 
 def run_revtr_to_source(source):
 
     '''
-    curl -XPOST -k -H "Revtr-Key:dummy" https://localhost:8082/api/v1/revtr --data '{"revtrs":[{"src":"216.66.68.179", "dst":"ple2.planet-lab.eu"}]}'
+    curl -XPOST -k -H "Revtr-Key:dummy" https://revtr.ccs.neu.edu/api/v1/revtr --data '{"revtrs":[{"src":"216.66.68.179", "dst":"ple2.planet-lab.eu"}]}'
     '''
     revtr_key = "dummy"
-    resp = requests.post(
-        f"https://revtr.ccs.neu.edu/api/v1/revtr",
-        headers={"Revtr-Key":"dummy"},
-        json={
-            "revtrs": [
-                {
-                    "src": source,
-                    "dst": "1.1.1.1",
-                }
-            ],
-            },
-    )
-    print(resp.json())
+    while True:
+        resp = requests.post(
+            f"https://revtr.ccs.neu.edu/api/v1/revtr",
+            headers={"Revtr-Key":"dummy"},
+            json={
+                "revtrs": [
+                    {
+                        "src": source,
+                        "dst": "1.1.1.1",
+                    }
+                ],
+                },
+        )
+        if resp.status_code == 200:
+            print(resp.json())
+            break
+        else:
+            print(resp.text)
+            time.sleep(30)
+            
+    
 
 
 
