@@ -65,6 +65,7 @@ type Config struct {
 	ScPath       string
 	IP           string
 	ScParserPath string
+	Rate         string 
 }
 
 // ParseConfig checks the given confiuration options to ensure validity
@@ -133,7 +134,7 @@ func GetProc(sockDir, scampPort, scamperPath string) *proc.Process {
 }
 
 // GetVPProc returns a process which is suitable to run on a planet-lab VP
-func GetVPProc(scpath, host, port string) *proc.Process {
+func GetVPProc(scpath, host, port, rate string) *proc.Process {
 	faddr := fmt.Sprintf("%s:%s", host, port)
-	return proc.New(scpath, nil, REMOTE, faddr, PPS, "100")
+	return proc.New(scpath, nil, REMOTE, faddr, PPS, rate)
 }

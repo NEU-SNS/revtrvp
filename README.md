@@ -26,7 +26,7 @@ Then, we need to check if your source is capable of receiving reverse traceroute
   
 Run the following command to start the plvp container, this will connect your source to the controller and starts the tests. You will receive two emails if your source can receive reverse traceroutes: one that states that your source is or is not able to receive reverse traceroutes and one stating that the node is ready. 
 
-"docker run --net=host --restart=unless-stopped -d --log-opt max-size=1g --log-opt max-file=1 -p 4381:4381 revtr/revtrvps /root.crt /plvp.config -loglevel debug"
+"docker run --name=plvp --net=host --restart=unless-stopped -d --log-opt max-size=1g --log-opt max-file=1 -p 4381:4381 revtrvp /root.crt /plvp.config -loglevel debug"
 
 Then, after receiving the second email, you can try to run reverse traceroute by running:
 

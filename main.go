@@ -64,6 +64,8 @@ func init() {
 		"The port scamper will try to connect to.")
 	flag.StringVar(conf.Scamper.Host, "scamper-host", "plcontroller.revtr.ccs.neu.edu",
 		"The host that the sc_remoted process is running, should most likely match the host arg")
+	flag.StringVar(conf.Scamper.Rate, "scamper-rate", "100",
+	"The probing rate of the source")
 	grpclog.SetLogger(log.GetLogger())
 	trace.AuthRequest = func(req *http.Request) (any, sensitive bool) {
 		host, _, err := net.SplitHostPort(req.RemoteAddr)
