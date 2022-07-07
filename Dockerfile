@@ -26,7 +26,7 @@ RUN apt-get update && \
 RUN mkdir -p scamper-src && \
     cd scamper-src && \
     # wget http://www.ccs.neu.edu/home/rhansen2/scamper.tar.gz && \
-    wget http://fring2.khoury.northeastern.edu/scamper-cvs-20211212x.tar.gz && 
+    wget http://fring2.khoury.northeastern.edu/scamper-cvs-20211212x.tar.gz && \
     tar xzf scamper.tar.gz && cd scamper-cvs-20211212x
 
 # For debugging scamper
