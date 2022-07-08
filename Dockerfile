@@ -13,9 +13,6 @@ RUN apt-get update && \
       inetutils-traceroute \
       init-system-helpers \
       iputils-ping \
-      # libc6:i386 \
-      # libncurses5:i386 \
-      # libstdc++6:i386 \
       libtool \
       python3 \
       tcpdump \
@@ -40,7 +37,7 @@ WORKDIR /scamper-src/scamper-cvs-20211212x/
 RUN ./configure && make -j8 &&  make install
 
 # tcpdump is added to sbin--any other workaround than this?
-RUN ln /usr/sbin/tcpdump /usr/bin/tcpdump 
+ENV PATH "$PATH:/usr/sbin"
 
 # All code/tools for traffic monitoring go here
 #RUN mkdir /traffic_monitoring

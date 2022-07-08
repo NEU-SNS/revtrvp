@@ -32,7 +32,7 @@ should not to need to change anything, but we discuss two parameters:
   this below.)
 * `scamper.rate` controls the maximum probing rate for the source.  The
   default is 100 pps, which should be enough for running tens of
-  concurrent reverse traceroutes.  Large measurements campaigns running
+  concurrent reverse traceroutes.  Large measurement campaigns running
   a larger number of concurrent measurements require increasing the
   probing rate.  (Of course, check with your upstream networks and
   notify the Reverse Traceroute operators before increasing the probing
@@ -68,7 +68,7 @@ reverse traceroute measurements.
 ## Run the Reverse Traceroute source
 
 As explained under "Prerequisites" above, a Reverse Traceroute source
-needs to received responses to spoofed ICMP probes sent by other vantage
+needs to receive responses to spoofed ICMP probes sent by other vantage
 points in the Reverse Traceroute system.  However, Docker runs
 containers behind a NAT by default, which will interfere with receiving
 the responses to spoofed ICMP probes.  You can work around this issue in
@@ -115,7 +115,7 @@ provide the RIPE Atlas credits for the traceroutes.  You can use the
 following REST request to run measurements to update the atlas towards
 your source:
 
-``` {bash}
+``` bash
 curl -X POST \
         -H 'Revtr-Key: <your-api-key>' \
         -H source:<your-source-ip-address> \
@@ -132,11 +132,11 @@ provide a RIPE Atlas API key.  This key should have permissions to
 create traceroute requests.  Refreshing the atlas to a source uses
 around 60K RIPE Atlas credits.
 
-``` {bash}
+``` bash
 curl -X POST \
         -H 'Revtr-Key: <your-api-key>' \
         -H source:<your-source-ip-address> \
-        -H 'RIPE-Key: <your-ripe-atlas-key>'
+        -H 'RIPE-Key: <your-ripe-atlas-key>' \
         https://<controller-hostname>/api/v1/atlas/run
 ```
 
@@ -155,7 +155,7 @@ reverse traceroute would be issued from 1.1.1.1 towards your source:
 
 ``` {bash}
 curl -X POST -k \
-        -H "Revtr-Key: <your-api-key>"
+        -H "Revtr-Key: <your-api-key>" \
         https://<controller-hostname>/api/v1/revtr \
         --data '{"revtrs":[{"src":"<your-source-ip-address>", \
                             "dst":"1.1.1.1"}]}'
