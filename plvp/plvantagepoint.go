@@ -197,6 +197,7 @@ func (vp *plVantagepointT) run(c Config, s SendCloser, ec chan error) {
 	con.ScPath = *c.Scamper.BinPath
 	con.IP = *c.Scamper.Host
 	con.Port = *c.Scamper.Port
+	con.Rate = *c.Scamper.Rate
 	err := scamper.ParseConfig(*con)
 	if err != nil {
 		log.Errorf("Invalid scamper args: %v", err)
@@ -216,7 +217,7 @@ func (vp *plVantagepointT) run(c Config, s SendCloser, ec chan error) {
 	vp.sc = *con
 	vp.mp = mproc.New()
 	vp.spoofmon = NewSpoofPingMonitor()
-	monaddr, err := util.GetBindAddr()
+	monaddr, err := util.GetBindAddr(*vp.config.Local.Interface)
 	if err != nil {
 		log.Errorf("Could not get bind addr: %v", err)
 		vp.stop()
@@ -284,6 +285,6 @@ func pickIP(host string) (string, error) {
 
 func (vp *plVantagepointT) startScamperProcs() {
 	log.Info("Starting scamper procs")
-	sp := scamper.GetVPProc(vp.sc.ScPath, vp.sc.IP, vp.sc.Port)
+	sp := scamper.GetVPProc(vp.sc.ScPath, vp.sc.IP, vp.sc.Port, vp.sc.Rate)
 	vp.mp.ManageProcess(sp, true, math.MaxUint32)
 }

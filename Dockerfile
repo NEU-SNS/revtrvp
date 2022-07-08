@@ -8,30 +8,36 @@ RUN apt-get update && \
       build-essential \
       ca-certificates \
       coreutils \
+      gcc \
       git \
       inetutils-traceroute \
       init-system-helpers \
       iputils-ping \
-      libc6:i386 \
-      libncurses5:i386 \
-      libstdc++6:i386 \
       libtool \
       python3 \
       tcpdump \
+      libssl-dev \
       wget && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p scamper-src && \
     cd scamper-src && \
-    wget http://www.ccs.neu.edu/home/rhansen2/scamper.tar.gz && \
-    tar xzf scamper.tar.gz && cd scamper-cvs-20150901
+    # wget http://www.ccs.neu.edu/home/rhansen2/scamper.tar.gz && \
+    # tar xzf scamper.tar.gz && cd scamper-cvs-20150901
+    wget http://fring2.khoury.northeastern.edu/scamper-cvs-20211212x.tar.gz && \
+    tar xzf scamper-cvs-20211212x.tar.gz && cd scamper-cvs-20211212x
 
-WORKDIR /scamper-src/scamper-cvs-20150901/
-RUN ./configure && make install
+# For debugging scamper
+# RUN mkdir -p scamper-src
+# COPY scamper/scamper-cvs-20150901 /scamper-src/scamper-cvs-20150901
+
+WORKDIR /scamper-src/scamper-cvs-20211212x/
+# WORKDIR /scamper-src/scamper-cvs-20150901/
+RUN ./configure && make -j8 &&  make install
 
 # tcpdump is added to sbin--any other workaround than this?
-RUN ln /usr/sbin/tcpdump /usr/bin/tcpdump 
+ENV PATH "$PATH:/usr/sbin"
 
 # All code/tools for traffic monitoring go here
 #RUN mkdir /traffic_monitoring

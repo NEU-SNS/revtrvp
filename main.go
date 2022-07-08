@@ -44,6 +44,8 @@ func init() {
 		"Prints the current version")
 	flag.StringVar(conf.Local.Addr, "a", ":65000",
 		"The address to run the local service on")
+	flag.StringVar(conf.Local.Interface, "i", "net1", 
+		"The network interface used by the plvp to connect to the plcontroller")
 	flag.BoolVar(conf.Local.CloseStdDesc, "d", false,
 		"Close std file descripters")
 	flag.BoolVar(conf.Local.AutoConnect, "auto-connect", false,
@@ -62,6 +64,8 @@ func init() {
 		"The port scamper will try to connect to.")
 	flag.StringVar(conf.Scamper.Host, "scamper-host", "plcontroller.revtr.ccs.neu.edu",
 		"The host that the sc_remoted process is running, should most likely match the host arg")
+	flag.StringVar(conf.Scamper.Rate, "scamper-rate", "100",
+	"The probing rate of the source")
 	grpclog.SetLogger(log.GetLogger())
 	trace.AuthRequest = func(req *http.Request) (any, sensitive bool) {
 		host, _, err := net.SplitHostPort(req.RemoteAddr)
