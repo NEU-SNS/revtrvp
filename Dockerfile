@@ -84,3 +84,4 @@ ENTRYPOINT ["/revtrvp"]
 CMD ["/root.crt", "plvp.config", "-loglevel", "error"]
 
 EXPOSE 4381
+
