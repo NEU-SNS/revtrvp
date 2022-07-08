@@ -52,10 +52,6 @@ launch the container later.
 
 ## Add the source to the system
 
-<<<<<<< HEAD
-First, you need to send an email to reverse.traceroute@gmail.com. In this email, provide the public IP address, your name, and your email, and a brief statement of why you want to add your source to the system. 
-If we can authenticate you, then we'll send you an email to tell you that your name has been added to our authorized users and an API key to run reverse traceroutes measurements. 
-=======
 The Reverse Traceroute controller maintains a list of authorized
 sources.  To add your source to the system, you will need to email
 reverse.traceroute@gmail.com.  Provide the public IP address, a
@@ -107,7 +103,6 @@ stating that your source is ready after it's been integrated into the
 system.
 
 ## Bootstrapping the traceroute atlas to your source
->>>>>>> cf6e28e5648260f4fb399c66cfd89e5bd70beee1
 
 To benefit from the full functionality of Reverse Traceroute, we need to
 bootstrap your source by building an atlas of forward traceroutes
@@ -115,34 +110,6 @@ towards it from public vantage points, then running Record Route pings
 to the traceroute hops revealed by traceroutes toward your source to
 support IP aliasing.
 
-<<<<<<< HEAD
-```
-docker run --name=plvp --net=host --restart=unless-stopped -d --log-opt max-size=1g --log-opt max-file=1 -p 4381:4381 revtrvp /root.crt /plvp.config -loglevel debug"
-```
-
-## Bootstrapping the traceroute atlas to your source
-
-To benefit from the full functionnality of the revtr 2.0, you need to bootstrap your source by running traceroutes to your source and RR pings to the traceroute hops revealed by these traceroutes to your source. 
-
-Just curl the following URL (hidden for double blind policy):
-
-```
-curl -X POST -H 'Revtr-Key: your api-key' -H source:your-source-ip-address https://hidden-url/api/v1/atlas/run
-```
-
-If it is the first time your source is being added to the system, we provide the RIPE Atlas credits for you to run these traceroutes. Otherwise you would have to put a RIPE Atlas key in the request.
-
-```
-curl -X POST -H 'Revtr-Key: your-api-key' -H 'RIPE-Key: your-ripe-key' -H source:your-source-ip-address https://hidden-url/api/v1/atlas/run
-```
-
-This operation should take 20 minutes to perform, the time for the RIPE Atlas traceroutes and the RR pings to complete.
-
-## Testing reverse traceroute to your source
-Once the atlas has been bootstrapped, you can run:
-
-python3 test_reverse_traceroute.py  your_source_ip_addres
-=======
 If this is the first time your source is being added to the system, we
 provide the RIPE Atlas credits for the traceroutes.  You can use the
 following REST request to run measurements to update the atlas towards
@@ -159,7 +126,6 @@ Where `<your-api-key>` is the key you received over e-mail from the
 Reverse Traceroute operators.  The `<controller-hostname>` is just the
 hostname of the server running the central controller, but anonymized
 for double-blind review.
->>>>>>> cf6e28e5648260f4fb399c66cfd89e5bd70beee1
 
 For subsequent refreshes of the atlas to your source, you need to
 provide a RIPE Atlas API key.  This key should have permissions to
