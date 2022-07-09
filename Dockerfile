@@ -9,6 +9,7 @@ RUN apt-get update && \
       ca-certificates \
       coreutils \
       gcc \
+      g++ \
       git \
       inetutils-traceroute \
       init-system-helpers \
@@ -16,10 +17,9 @@ RUN apt-get update && \
       libtool \
       python3 \
       tcpdump \
-      libssl-dev \
-      wget && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+      wget
+# RUN apt-get clean && \
+# RUN rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p scamper-src && \
     cd scamper-src && \
@@ -34,10 +34,20 @@ RUN mkdir -p scamper-src && \
 
 WORKDIR /scamper-src/scamper-cvs-20211212x/
 # WORKDIR /scamper-src/scamper-cvs-20150901/
-RUN ./configure && make -j8 &&  make install
+RUN apt-get install --yes libc6-dev zlib1g-dev
+RUN apt-get install libssl1.0-dev
+# RUN ./configure --enable-static --disable-shared CFLAGS="-static -lssl -lcrypto -lpthread  -lz -ldl -static-libgcc" LIBS="-lssl -lcrypto -lpthread  -lz -ldl"
+RUN ./configure --enable-debug
+# RUN  make -j8
+RUN ls
+RUN make LDFLAGS="-all-static" LIBS="-lssl -lcrypto -lpthread -lm -ldl " -j16
+RUN  make install
+RUN apt-get -y install gdb
+# RUN ldd scamper/scamper
+
 
 # tcpdump is added to sbin--any other workaround than this?
-ENV PATH "$PATH:/usr/sbin"
+# ENV PATH "$PATH:/usr/sbin"
 
 # All code/tools for traffic monitoring go here
 #RUN mkdir /traffic_monitoring
@@ -66,12 +76,19 @@ RUN chmod -R a+rx /go/src/github.com/NEU-SNS/revtrvp/revtrvp
 #COPY . /plvp
 #RUN useradd -ms /bin/bash plvp
 
-FROM ubuntu:18.04
+# In case we want to switch to a dynamically linked binary.
+# FROM ubuntu:18.04
+# RUN apt update
+# RUN apt-get install libssl-dev
+
+FROM build_scamper
 
 COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/revtrvp /
 COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/root.crt /
 COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/plvp.config /
-COPY --from=build_scamper /usr/local/bin/scamper /usr/local/bin
+
+# COPY --from=build_scamper /usr/local/bin/scamper /usr/local/bin
+# COPY --from=build_scamper /usr/lib/x86_64-linux-gnu/ /usr/lib/x86_64-linux-gnu/
 
 RUN ldconfig
 RUN which scamper
