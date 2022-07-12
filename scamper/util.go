@@ -136,5 +136,5 @@ func GetProc(sockDir, scampPort, scamperPath string) *proc.Process {
 // GetVPProc returns a process which is suitable to run on a planet-lab VP
 func GetVPProc(scpath, host, port, rate string) *proc.Process {
 	faddr := fmt.Sprintf("%s:%s", host, port)
-	return proc.New(scpath, nil, REMOTE, faddr, PPS, rate)
+	return proc.New(scpath, nil, "-O", "notls", "-O", "notls-remote", REMOTE, faddr, PPS, rate)
 }
