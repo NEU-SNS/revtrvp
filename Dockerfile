@@ -17,6 +17,7 @@ RUN apt-get update && \
       libtool \
       python3 \
       tcpdump \
+      vim \
       wget
 # RUN apt-get clean && \
 # RUN rm -rf /var/lib/apt/lists/*
@@ -35,14 +36,14 @@ RUN mkdir -p scamper-src && \
 WORKDIR /scamper-src/scamper-cvs-20211212x/
 # WORKDIR /scamper-src/scamper-cvs-20150901/
 RUN apt-get install --yes libc6-dev zlib1g-dev
-RUN apt-get install libssl1.0-dev
+RUN apt-get install -y libssl1.0-dev
 # RUN ./configure --enable-static --disable-shared CFLAGS="-static -lssl -lcrypto -lpthread  -lz -ldl -static-libgcc" LIBS="-lssl -lcrypto -lpthread  -lz -ldl"
 RUN ./configure --enable-debug
 # RUN  make -j8
 RUN ls
 RUN make LDFLAGS="-all-static" LIBS="-lssl -lcrypto -lpthread -lm -ldl " -j16
 RUN  make install
-RUN apt-get -y install gdb
+# RUN apt-get -y install gdb
 # RUN ldd scamper/scamper
 
 
