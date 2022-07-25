@@ -44,7 +44,9 @@ import (
 
 const (
 	// ID is the ICMDPID magic number
-	ID = 0xf0f1
+	// IDMin = 0xf0f1
+	IDMin = 50000
+	IDMax = IDMin + 10000
 	// SEQ is the ICMP seq number magic number
 	SEQ = 0xf2f3
 )
@@ -156,7 +158,7 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 	//	if _, errf := logf.WriteString("Checking if ID (" + strconv.Itoa(echo.ID) +  ") and SEQ (" + strconv.Itoa(echo.Seq) + ") are correct values.\n"); errf != nil {
 	//		log.Error(errf)
 	//	}
-		if echo.ID != ID || echo.Seq != SEQ {
+		if (echo.ID < IDMin && echo.ID >= IDMax) || echo.Seq != SEQ {
 			return nil, ErrorNonSpoofedProbe
 		}
 
