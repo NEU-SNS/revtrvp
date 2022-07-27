@@ -89,7 +89,7 @@ type SendCloser interface {
 
 type PLControllerSender struct {
 	RootCA string
-	conns   [] *grpc.ClientConn
+	conn *grpc.ClientConn
 }
 
 func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
@@ -117,84 +117,88 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 		log.Infof("Sending back to controller: " + lgg)
 	}
 	
-
-	if isDebugPlController {
-		// Hack to add the debug plcontroller in any case
-		dnsPlcontrollerDebugServer := "plcontroller.revtr.ccs.neu.edu."
-		dnsPlcontrollerDebugPort := 9001
-
-		insecureOptionGrpc := grpc.WithInsecure()
-		connstrat := fmt.Sprintf("%s:%d", dnsPlcontrollerDebugServer, dnsPlcontrollerDebugPort) 
-		cc, err := grpc.Dial(connstrat, insecureOptionGrpc)
-		if err != nil {
-			log.Error(err)
-		}
-		log.Infof("Added connection to plcontroller debug %d ", dnsPlcontrollerDebugPort)
-		cs.conns = append(cs.conns, cc)
-
-		// creds, err := credentials.NewClientTLSFromFile(cs.RootCA, dnsPlcontrollerDebugServer)
-		// if err != nil {
-		// 	log.Error(err)
-		// 	return err 
-		// }
-		// log.Infof("Adding plcontroller debug service %s %d", dnsPlcontrollerDebugServer, dnsPlcontrollerDebugPort)
-		// addr := fmt.Sprintf("%s:%d", dnsPlcontrollerDebugServer, dnsPlcontrollerDebugPort)
-		
-		// cc, err := grpc.Dial(addr, grpc.WithTransportCredentials(creds))
-		// if err != nil {
-		// 	log.Error(err)
-		// 	return err
-		// }
-		
-	} else {
-		_, srvs, err := net.LookupSRV("plcontroller", "tcp", "revtr.ccs.neu.edu")
-		log.Infof("Found %d plcontroller tcp services", len(srvs))
-		if err != nil {
-			log.Error(err)
-			return err
-		}
-		for _, srv := range(srvs) {
-			log.Infof("Found service %s %d\n", srv.Target, srv.Port)
-			creds, err := credentials.NewClientTLSFromFile(cs.RootCA, srv.Target)
+	
+	if cs.conn == nil {
+		if isDebugPlController {
+			// Hack to add the debug plcontroller in any case
+			dnsPlcontrollerDebugServer := "plcontroller.revtr.ccs.neu.edu."
+			dnsPlcontrollerDebugPort := 9001
+	
+			insecureOptionGrpc := grpc.WithInsecure()
+			connstrat := fmt.Sprintf("%s:%d", dnsPlcontrollerDebugServer, dnsPlcontrollerDebugPort) 
+			cc, err := grpc.Dial(connstrat, insecureOptionGrpc)
 			if err != nil {
 				log.Error(err)
-				continue
 			}
+			log.Infof("Added connection to plcontroller debug %d ", dnsPlcontrollerDebugPort)
+			cs.conn = cc
+	
+			// creds, err := credentials.NewClientTLSFromFile(cs.RootCA, dnsPlcontrollerDebugServer)
+			// if err != nil {
+			// 	log.Error(err)
+			// 	return err 
+			// }
+			// log.Infof("Adding plcontroller debug service %s %d", dnsPlcontrollerDebugServer, dnsPlcontrollerDebugPort)
+			// addr := fmt.Sprintf("%s:%d", dnsPlcontrollerDebugServer, dnsPlcontrollerDebugPort)
 			
-			addr := fmt.Sprintf("%s:%d", srv.Target, srv.Port)
-		
-			cc, err := grpc.Dial(addr, grpc.WithTransportCredentials(creds))
+			// cc, err := grpc.Dial(addr, grpc.WithTransportCredentials(creds))
+			// if err != nil {
+			// 	log.Error(err)
+			// 	return err
+			// }
+			
+		} else {
+			_, srvs, err := net.LookupSRV("plcontroller", "tcp", "revtr.ccs.neu.edu")
+			log.Infof("Found %d plcontroller tcp services", len(srvs))
 			if err != nil {
 				log.Error(err)
 				return err
 			}
-			cs.conns = append(cs.conns, cc)
-		}
-	}	
+			for i, srv := range(srvs) {
+				if i > 0 {
+					// Allow only one connection to GRPC for now, but someday might be useful 
+					// if we have multiple controllers.
+					break
+				}
+				log.Infof("Found service %s %d\n", srv.Target, srv.Port)
+				creds, err := credentials.NewClientTLSFromFile(cs.RootCA, srv.Target)
+				if err != nil {
+					log.Error(err)
+					continue
+				}
+				
+				addr := fmt.Sprintf("%s:%d", srv.Target, srv.Port)
+			
+				cc, err := grpc.Dial(addr, grpc.WithTransportCredentials(creds))
+				if err != nil {
+					log.Error(err)
+					return err
+				}
+				cs.conn = cc
+			}
+		}	
+	}
+	
 
-	for _, conn := range(cs.conns) {
-		log.Debug("Establishing PLController conn...\n")
-		client := plc.NewPLControllerClient(conn)
-		log.Debugf("PLController conn established.\n")
-		contx, cancel := ctx.WithTimeout(ctx.Background(), time.Second*2)
-		defer cancel()
-		log.Debugf("calling AcceptProbes to server\n")
-		_, err := client.AcceptProbes(contx, &dm.SpoofedProbes{Probes: ps})
-		if err != nil {
-			log.Error(err)
-		}
+	log.Debug("Establishing PLController conn...\n")
+	client := plc.NewPLControllerClient(cs.conn)
+	log.Debugf("PLController conn established.\n")
+	contx, cancel := ctx.WithTimeout(ctx.Background(), time.Second*2)
+	defer cancel()
+	log.Debugf("calling AcceptProbes to server\n")
+	_, err := client.AcceptProbes(contx, &dm.SpoofedProbes{Probes: ps})
+	if err != nil {
+		return err
 	} 
 	
 	return nil
 }
 
 func (cs *PLControllerSender) Close() error {
-	if len(cs.conns) > 0 {
-		for _, conn := range(cs.conns) {
-			err := conn.Close()
-			if err != nil {
-				return err
-			}
+	if cs.conn != nil {
+		err := cs.conn.Close()
+		if err != nil {
+			return err
 		}
 	}
 	return nil
