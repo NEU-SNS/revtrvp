@@ -276,7 +276,7 @@ func (vp *plVantagepointT) run(c Config, s SendCloser, ec chan error) {
 		ec <- err
 		return
 	}
-	vp.monec = make(chan error, 1)
+	vp.monec = make(chan error, 10000)
 	// Increase the size of the spoofing monitoring chanel
 	vp.monip = make(chan dm.Probe, 100000)
 	go vp.spoofmon.Start(monaddr, plVantagepoint.monip, plVantagepoint.monec)
@@ -314,7 +314,7 @@ func (vp *plVantagepointT) monitorSpoofedPings(probes chan dm.Probe, ec chan err
 				sprobes = append(sprobes, &probe)
 			case err := <-ec:
 				switch err {
-				case ErrorNotICMPEcho, ErrorNonSpoofedProbe:
+				case ErrorNotICMPEcho, ErrorNonICMPEchoReply, ErrorNonSpoofedProbe:
 					continue
 				}
 			case <-ticker.C:
