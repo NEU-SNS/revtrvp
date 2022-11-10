@@ -63,7 +63,7 @@ var (
 		Name:      "count",
 		Help:      "Count of the spoofed probes received",
 	})
-	isDebugPlController = false
+	Conf = NewConfig()
 )
 
 var id = rand.Uint32()
@@ -119,33 +119,23 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 	
 	
 	if cs.conn == nil {
-		if isDebugPlController {
+		if *Conf.Environment.Debug {
+			log.Infof("Connecting to plcontroller to %s %d", *Conf.Local.Host, *Conf.Local.Port)
 			// Hack to add the debug plcontroller in any case
-			dnsPlcontrollerDebugServer := "plcontroller.revtr.ccs.neu.edu."
-			dnsPlcontrollerDebugPort := 9001
-	
-			insecureOptionGrpc := grpc.WithInsecure()
-			connstrat := fmt.Sprintf("%s:%d", dnsPlcontrollerDebugServer, dnsPlcontrollerDebugPort) 
-			cc, err := grpc.Dial(connstrat, insecureOptionGrpc)
+			creds, err := credentials.NewClientTLSFromFile(cs.RootCA, "plcontroller.revtr.ccs.neu.edu")
 			if err != nil {
 				log.Error(err)
+				return err
 			}
-			log.Infof("Added connection to plcontroller debug %d ", dnsPlcontrollerDebugPort)
-			cs.conn = cc
-	
-			// creds, err := credentials.NewClientTLSFromFile(cs.RootCA, dnsPlcontrollerDebugServer)
-			// if err != nil {
-			// 	log.Error(err)
-			// 	return err 
-			// }
-			// log.Infof("Adding plcontroller debug service %s %d", dnsPlcontrollerDebugServer, dnsPlcontrollerDebugPort)
-			// addr := fmt.Sprintf("%s:%d", dnsPlcontrollerDebugServer, dnsPlcontrollerDebugPort)
 			
-			// cc, err := grpc.Dial(addr, grpc.WithTransportCredentials(creds))
-			// if err != nil {
-			// 	log.Error(err)
-			// 	return err
-			// }
+			addr := fmt.Sprintf("%s:%d", *Conf.Local.Host, *Conf.Local.Port)
+		
+			cc, err := grpc.Dial(addr, grpc.WithTransportCredentials(creds))
+			if err != nil {
+				log.Error(err)
+				return err
+			}
+			cs.conn = cc
 			
 		} else {
 			_, srvs, err := net.LookupSRV("plcontroller", "tcp", "revtr.ccs.neu.edu")
@@ -331,8 +321,11 @@ func pickIP(host string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	return addrs[rand.Intn(len(addrs))], nil
+	
+	addrIndex := rand.Intn(len(addrs))
+	addr := addrs[addrIndex]
+	log.Debugf("Found IP address to bind %s to %s", host, addr)
+	return addr, nil
 }
 
 func (vp *plVantagepointT) startScamperProcs() {
