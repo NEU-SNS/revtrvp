@@ -17,6 +17,7 @@ RUN apt-get update && \
       libtool \
       python3 \
       tcpdump \
+      vim \
       wget
 # RUN apt-get clean && \
 # RUN rm -rf /var/lib/apt/lists/*

@@ -44,7 +44,9 @@ import (
 
 const (
 	// ID is the ICMDPID magic number
-	ID = 0xf0f1
+	// IDMin = 0xf0f1
+	IDMin = 50000
+	IDMax = IDMin + 10000
 	// SEQ is the ICMP seq number magic number
 	SEQ = 0xf2f3
 )
@@ -76,6 +78,8 @@ func reconnect(addr string) (*ipv4.RawConn, error) {
 var (
 	// ErrorNotICMPEcho is returned when the probe is not of the right type
 	ErrorNotICMPEcho = fmt.Errorf("Received Non ICMP Probe")
+	// ErrorNonICMPEchoReply is returned when the probe is not spoofed
+	ErrorNonICMPEchoReply = fmt.Errorf("Received ICMP Probe that is not an ICMP echo reply")
 	// ErrorNonSpoofedProbe is returned when the probe is not spoofed
 	ErrorNonSpoofedProbe = fmt.Errorf("Received ICMP Probe that was not spoofed")
 	// ErrorSpoofedProbeNoID is returned when the probe has no ID
@@ -151,12 +155,17 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 	if err != nil {
 		return nil, err
 	}
+	
+	if mess.Type.(ipv4.ICMPType) != 0 {
+		return nil, ErrorNonICMPEchoReply
+	}
+
 	if echo, ok := mess.Body.(*icmp.Echo); ok {
 		log.Debug("Checking if ID (" + strconv.Itoa(echo.ID) +  ") and SEQ (" + strconv.Itoa(echo.Seq) + ") are correct values.\n")
 	//	if _, errf := logf.WriteString("Checking if ID (" + strconv.Itoa(echo.ID) +  ") and SEQ (" + strconv.Itoa(echo.Seq) + ") are correct values.\n"); errf != nil {
 	//		log.Error(errf)
 	//	}
-		if echo.ID != ID || echo.Seq != SEQ {
+		if (echo.ID < IDMin && echo.ID >= IDMax) || echo.Seq != SEQ {
 			return nil, ErrorNonSpoofedProbe
 		}
 
