@@ -35,14 +35,14 @@ RUN mkdir -p scamper-src && \
 WORKDIR /scamper-src/scamper-cvs-20211212x/
 # WORKDIR /scamper-src/scamper-cvs-20150901/
 RUN apt-get install --yes libc6-dev zlib1g-dev
-RUN apt-get install libssl1.0-dev
+RUN apt-get install -y libssl1.0-dev
 # RUN ./configure --enable-static --disable-shared CFLAGS="-static -lssl -lcrypto -lpthread  -lz -ldl -static-libgcc" LIBS="-lssl -lcrypto -lpthread  -lz -ldl"
 RUN ./configure --enable-debug
 # RUN  make -j8
 RUN ls
 RUN make LDFLAGS="-all-static" LIBS="-lssl -lcrypto -lpthread -lm -ldl " -j16
 RUN  make install
-RUN apt-get -y install gdb
+# RUN apt-get -y install gdb
 # RUN ldd scamper/scamper
 
 
@@ -65,7 +65,7 @@ RUN apt-get -y install gdb
 # Create cron log file 
 #RUN touch /var/log/cron.log
 
-FROM golang:1.13 as build_revtrvp
+FROM golang:1.19.3 as build_revtrvp
 
 ADD . /go/src/github.com/NEU-SNS/revtrvp
 WORKDIR /go/src/github.com/NEU-SNS/revtrvp
@@ -84,7 +84,8 @@ RUN chmod -R a+rx /go/src/github.com/NEU-SNS/revtrvp/revtrvp
 FROM build_scamper
 
 COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/revtrvp /
-COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/root.crt /
+# COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/root.crt /
+COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/server.crt /
 COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/plvp.config /
 
 # COPY --from=build_scamper /usr/local/bin/scamper /usr/local/bin
@@ -95,7 +96,8 @@ RUN which scamper
 WORKDIR /
 
 ENTRYPOINT ["/revtrvp"]
-CMD ["/root.crt", "plvp.config", "-loglevel", "error"]
+CMD ["/server.crt", "plvp.config", "-loglevel", "error"]
 
 EXPOSE 4381
+
 
