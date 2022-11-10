@@ -121,7 +121,7 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 	if cs.conn == nil {
 		if *Conf.Environment.Debug {
 			log.Infof("Connecting to plcontroller to %s %d", *Conf.Local.Host, *Conf.Local.Port)
-			// Hack to add the debug plcontroller in any case
+			// Certificate is for the plcontroller.
 			creds, err := credentials.NewClientTLSFromFile(cs.RootCA, "plcontroller.revtr.ccs.neu.edu")
 			if err != nil {
 				log.Error(err)
