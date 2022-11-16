@@ -66,7 +66,7 @@ RUN  make install
 # Create cron log file 
 #RUN touch /var/log/cron.log
 
-FROM golang:1.13 as build_revtrvp
+FROM golang:1.19.3 as build_revtrvp
 
 ADD . /go/src/github.com/NEU-SNS/revtrvp
 WORKDIR /go/src/github.com/NEU-SNS/revtrvp
@@ -85,7 +85,8 @@ RUN chmod -R a+rx /go/src/github.com/NEU-SNS/revtrvp/revtrvp
 FROM build_scamper
 
 COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/revtrvp /
-COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/root.crt /
+# COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/root.crt /
+COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/server.crt /
 COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/plvp.config /
 
 # COPY --from=build_scamper /usr/local/bin/scamper /usr/local/bin
@@ -96,7 +97,8 @@ RUN which scamper
 WORKDIR /
 
 ENTRYPOINT ["/revtrvp"]
-CMD ["/root.crt", "plvp.config", "-loglevel", "error"]
+CMD ["/server.crt", "plvp.config", "-loglevel", "error"]
 
 EXPOSE 4381
+
 

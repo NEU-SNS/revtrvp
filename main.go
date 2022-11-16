@@ -28,8 +28,6 @@ var (
 	lockFile      string
 )
 
-var conf = plvp.NewConfig()
-
 func init() {
 	configArg := os.Args[2]
 	configPath = configArg
@@ -40,31 +38,32 @@ func init() {
 	} else {
 		config.AddConfigPath(configPath)
 	}
+	flag.BoolVar(plvp.Conf.Environment.Debug, "debug", false, "Environment used (debug, production)")
 	flag.BoolVar(&vFlag, "version", false,
 		"Prints the current version")
-	flag.StringVar(conf.Local.Addr, "a", ":65000",
+	flag.StringVar(plvp.Conf.Local.Addr, "a", ":65000",
 		"The address to run the local service on")
-	flag.StringVar(conf.Local.Interface, "i", "net1", 
+	flag.StringVar(plvp.Conf.Local.Interface, "i", "net1", 
 		"The network interface used by the plvp to connect to the plcontroller")
-	flag.BoolVar(conf.Local.CloseStdDesc, "d", false,
+	flag.BoolVar(plvp.Conf.Local.CloseStdDesc, "d", false,
 		"Close std file descripters")
-	flag.BoolVar(conf.Local.AutoConnect, "auto-connect", false,
+	flag.BoolVar(plvp.Conf.Local.AutoConnect, "auto-connect", false,
 		"Autoconnect to 0.0.0.0 and will use port 55000")
-	flag.StringVar(conf.Local.PProfAddr, "pprof-addr", ":55557",
+	flag.StringVar(plvp.Conf.Local.PProfAddr, "pprof-addr", ":55557",
 		"The address to use for pperf")
-	flag.StringVar(conf.Local.Host, "host", "plcontroller.revtr.ccs.neu.edu",
+	flag.StringVar(plvp.Conf.Local.Host, "host", "plcontroller.revtr.ccs.neu.edu",
 		"The url for the plcontroller service")
-	flag.IntVar(conf.Local.Port, "p", 4380,
+	flag.IntVar(plvp.Conf.Local.Port, "p", 4380,
 		"The port the controller service is listening on")
-	flag.BoolVar(conf.Local.StartScamp, "start-scamper", true,
+	flag.BoolVar(plvp.Conf.Local.StartScamp, "start-scamper", true,
 		"Determines if scamper starts or not.")
-	flag.StringVar(conf.Scamper.BinPath, "b", "/usr/local/bin/scamper",
+	flag.StringVar(plvp.Conf.Scamper.BinPath, "b", "/usr/local/bin/scamper",
 		"The path to the scamper binary")
-	flag.StringVar(conf.Scamper.Port, "scamper-port", "4381",
+	flag.StringVar(plvp.Conf.Scamper.Port, "scamper-port", "4381",
 		"The port scamper will try to connect to.")
-	flag.StringVar(conf.Scamper.Host, "scamper-host", "plcontroller.revtr.ccs.neu.edu",
+	flag.StringVar(plvp.Conf.Scamper.Host, "scamper-host", "plcontroller.revtr.ccs.neu.edu",
 		"The host that the sc_remoted process is running, should most likely match the host arg")
-	flag.StringVar(conf.Scamper.Rate, "scamper-rate", "100",
+	flag.StringVar(plvp.Conf.Scamper.Rate, "scamper-rate", "100",
 	"The probing rate of the source")
 	grpclog.SetLogger(log.GetLogger())
 	trace.AuthRequest = func(req *http.Request) (any, sensitive bool) {
@@ -83,7 +82,7 @@ func init() {
 func main() {
 
 	go sigHandle()
-	err := config.Parse(flag.CommandLine, &conf)
+	err := config.Parse(flag.CommandLine, &plvp.Conf)
 	if err != nil {
 		log.Errorf("Failed to parse config: %v", err)
 		exit(1)
@@ -105,8 +104,8 @@ func main() {
 	//	}
 	rootArg := os.Args[1]
     log.Info(rootArg)
-	util.CloseStdFiles(*conf.Local.CloseStdDesc)
-	err = <-plvp.Start(conf, &plvp.PLControllerSender{RootCA: rootArg})
+	util.CloseStdFiles(*plvp.Conf.Local.CloseStdDesc)
+	err = <-plvp.Start(plvp.Conf, &plvp.PLControllerSender{RootCA: rootArg})
 	if err != nil {
 		log.Errorf("PLVP Start returned with error: %v", err)
 		exit(1)
