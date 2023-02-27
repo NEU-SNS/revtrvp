@@ -8,10 +8,14 @@ be used to measure reverse traceroutes from arbitrary destinations.
 
 ## Prerequisites
 
-The Reverse Traceroute source listens for spoofed ICMP packets.  The
-source should either have a public IP address or, if it is behind a NAT,
-should be forwarded all ICMP packets arriving at the NAT.  The ICMP
-packets received by the Reverse Traceroute source contain IP Record
+First of all, by joining the system, you are allowing our vantage points to use 
+your source IP address to send packets such that the responses go back to your 
+source. Your source will listen for responses to the spoofed ICMP packets 
+(spoofed as your source IP address). 
+
+The source should either have a public IP address or, if it is behind a NAT,
+should be forwarded all ICMP packets arriving at the NAT. The ICMP
+packets received by a Reverse Traceroute source contain IP Record
 Route options, so the source's hosting network (and upstream networks)
 should not filter out or drop packets with IP options.
 
