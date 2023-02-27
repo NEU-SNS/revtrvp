@@ -48,7 +48,7 @@ const (
 	IDMin = 50000
 	IDMax = IDMin + 10000
 	// SEQ is the ICMP seq number magic number
-	SEQ = 0xf2f3
+	SEQ = 62195
 )
 
 var (

@@ -1,3 +1,81 @@
+# Introduction
+
+This is the documenation for using the REVTR 2.0 system. You can either run reverse traceroutes from destinations back to a M-Lab source using the [API](#API), or back to your own source by [adding it](#setting-up-a-reverse-traceroute-source)
+to the REVTR 2.0 system.
+
+# API
+
+Currently, we give access to our RESTful API provided that you contacted us at revtr@ccs.neu.edu and we gave you an API key.
+
+``` {bash}
+curl -X POST -k -H "Revtr-Key: <your-api-key>" https://revtr.ccs.neu.edu/api/v1/revtr --data '{"revtrs":[{"src":"<source-ip-address>", "dst":"<destination-ip-address>", "label":"<label>"}]}'
+```
+
+The label will server to retrieve your measurements, so put something like a unique ID 
+and/or your name. 
+
+To find the available sources, you can use this query:
+
+``` {bash}
+curl -X GET -k -H "Revtr-Key: <your-api-key>" https://revtr.ccs.neu.edu/api/v1/sources
+```
+
+## Fetching the results of your reverse traceroutes
+
+We are uploading all the finished reverse traceroutes to M-Lab archive every 10 minutes, 
+so you should wait about 10-15 minutes after you started your last reverse traceroute
+measurement before it gets uploaded.
+Then, you can download your results [here](https://console.cloud.google.com/storage/browser/thirdparty-revtr-mlab-oti/revtr) on this M-Lab public archive.
+You can postfilter your reverse traceroutes using the filter that you provided.
+
+## Interpreting the results of your reverse traceroutes
+
+The results in the M-Lab archive are the jsonl extension, with one
+reverse traceroute per line. An example is:
+
+```{json}
+{"id": 20525538, "stop_reason": "REACHES", "fail_reason": "", "src": "193.142.125.51", "dst": "91.224.181.97", "runtime": 1113501997, "date": 1669835097, "label": "bgp_survey_no_timestamp_test_load", "revtr_hops": [{"hop_number": 0, "hop_ip": "91.224.181.97", "hop_type": 1, "measurement_id": 0, "rtt": 18365, "rtt_measurement_id": 1774719956, "cidr": null, "asn": null}, {"hop_number": 1, "hop_ip": "87.245.249.121", "hop_type": 5, "measurement_id": 1774718488, "rtt": 18251, "rtt_measurement_id": 1774719952, "cidr": null, "asn": null}, {"hop_number": 2, "hop_ip": "87.245.225.176", "hop_type": 5, "measurement_id": 1774718488, "rtt": 50144, "rtt_measurement_id": 1774719944, "cidr": null, "asn": null}, {"hop_number": 3, "hop_ip": "80.231.65.2", "hop_type": 5, "measurement_id": 1774718488, "rtt": 870, "rtt_measurement_id": 1774719949, "cidr": null, "asn": null}, {"hop_number": 4, "hop_ip": "185.11.76.45", "hop_type": 4, "measurement_id": 2905588, "rtt": 23231, "rtt_measurement_id": 1774719951, "cidr": null, "asn": null}, {"hop_number": 5, "hop_ip": "185.11.76.76", "hop_type": 4, "measurement_id": 2905588, "rtt": 22508, "rtt_measurement_id": 1774719957, "cidr": null, "asn": null}, {"hop_number": 6, "hop_ip": "213.242.112.49", "hop_type": 4, "measurement_id": 2905588, "rtt": 18089, "rtt_measurement_id": 1774719946, "cidr": null, "asn": null}, {"hop_number": 7, "hop_ip": "4.69.159.46", "hop_type": 4, "measurement_id": 2905588, "rtt": 22129, "rtt_measurement_id": 1774719945, "cidr": null, "asn": null}, {"hop_number": 8, "hop_ip": "4.68.74.110", "hop_type": 4, "measurement_id": 2905588, "rtt": 18752, "rtt_measurement_id": 1774719953, "cidr": null, "asn": null}, {"hop_number": 9, "hop_ip": "5.23.30.17", "hop_type": 4, "measurement_id": 2905588, "rtt": 296, "rtt_measurement_id": 1774719955, "cidr": null, "asn": null}, {"hop_number": 10, "hop_ip": "193.142.125.51", "hop_type": 4, "measurement_id": 2905588, "rtt": 22, "rtt_measurement_id": 1774719954, "cidr": null, "asn": null}]}
+{"id": 20525506, "stop_reason": "REACHES", "fail_reason": "", "src": "173.205.3.25", "dst": "182.75.124.57", "runtime": 1095979593, "date": 1669835097, "label": "bgp_survey_no_timestamp_test_load", "revtr_hops": [{"hop_number": 0, "hop_ip": "182.75.124.57", "hop_type": 1, "measurement_id": 0, "rtt": 274242, "rtt_measurement_id": 1774720375, "cidr": null, "asn": null}, {"hop_number": 1, "hop_ip": "203.101.87.155", "hop_type": 5, "measurement_id": 1774718425, "rtt": 263928, "rtt_measurement_id": 1774720373, "cidr": null, "asn": null}, {"hop_number": 2, "hop_ip": "173.205.3.25", "hop_type": 5, "measurement_id": 1774718425, "rtt": 34, "rtt_measurement_id": 1774720530, "cidr": null, "asn": null}]}
+```
+
+### Fields of a reverse traceroute measurement
+
+|||
+|---|---|
+| id  | id of the reverse traceroute measurement  |
+| src  | source of the reverse traceroute measurement (e.g., an M-Lab source or your own source) |
+| dst  | destination of the reverse traceroute measurement  |
+| stop_reason  | stopping reason of the measurement (REACHES, or FAILED)  | 
+| runtime  | time to measure the reverse path (in ns)  |
+| date  | starting date of the measurement (UNIX timestamp) |
+| label  | label of the measurement  |
+
+### Hop types 
+
+The hop types and number are described in the next table. For more details, please refer to the corresponding sections of our [REVTR 2.0 IMC 2022 paper](https://dl.acm.org/doi/pdf/10.1145/3517745.3561422)
+
+| Type | Name  | Description |
+|---|---|---|
+| 1  | Destination  | The hop of the destination  |
+| 2  | Assume symmetry  | This hop was found by running a forward traceroute to the current previous hop and assumed symmetry on the penultimate hop, i.e. the penultimate hop was the next reverse hop |
+| 3  |  Intersected traceroute | This hop was found in a traceroute that was intersected by the last hop of type != 3. The intersection was exactly the last hop or an alias of the last hop (Sec.2, Intersecting a traceroute)|
+| 4  |  Intersected Record Route atlas | This hop was found in a Record Route hop revealed by our new technique to reveal Record Route interfaces from the traceroute atlas (Sec. 4.1, Q2 and Sec. 4.2). See more details about how to process these hops [here](#more-details-about-processing-hops-of-type-4-intersected-record-route-atlas) |
+| 5  |  Record Route | This hop was found using Record Route (Sec.2, Record Route) |
+| 6  |  Spoofed Record Route | This hop was found using spoofed Record Route (Sec.2, Record Route) |
+
+#### Details about how to interpret hops of type 2, assumed symmetric
+
+We found in our paper that assuming symmetry on the penultimate hop of a forward traceroute is correct in 57% of the cases if the link on which we assume symmetry is interdomain and 90% for intradomain (Sec 4.4).
+To let you the possibility to consider or filter out these measurements, we still return the paths measured by REVTR 2.0 with these symmetry assumptions. What we suggest though, is that you run your IP to AS mapping on the path and only keep the paths that consider trustworthy. In the paper, we only kept those with intradomain assumptions of symmetry. 
+
+#### Details about how to interpret hops of type 4, Intersected Record Route atlas
+
+When a reverse traceroute intersects the Record Route atlas, as we have incomplete alias information, we might not know exactly where the reverse traceroute intersected the traceroute.
+For instance, if the traceroute in atlas was VP -> T1 -> T2 -> T3 -> T4 -> S, where VP and S are our vantage point and our source, then our technique issued Record Route pings from S (or spoofed as S) to T1, T2, T3, and T4. Let us say the ping to T1 reveals R1, and other reveal nothing. 
+If we know that T1 is an alias of R1, then, when a reverse traceroute intersects R1, we can say the rest of the path is T1 (or R1) -> T2 -> T3 -> T4 -> S. But if we do not have this information, it could be that R1 is an alias of T2, or even T3, if T1 and T2 do not stamp Record Route packets. In that case, we can only say that a future reverse traceroute intersecting in R1 intersected somewhere between T1 and T4.
+What you will have in the data in a list of hops of type 4, corresponding to the segment of the traceroute where the reverse traceroute could have intersected. 
+A trick that we used to narrow down the size of the potential intersected segment is to map IP addresses to their AS, and remove any AS loop from the AS path. 
+
 # Setting up a Reverse Traceroute source
 
 This is the documentation for adding a source to the Reverse Traceroute
@@ -158,9 +236,5 @@ object with `src` and `dst` keys.  In the example below, a single
 reverse traceroute would be issued from 1.1.1.1 towards your source:
 
 ``` {bash}
-curl -X POST -k \
-        -H "Revtr-Key: <your-api-key>" \
-        https://<controller-hostname>/api/v1/revtr \
-        --data '{"revtrs":[{"src":"<your-source-ip-address>", \
-                            "dst":"1.1.1.1"}]}'
+curl -X POST -k -H "Revtr-Key: <your-api-key>" https://<controller-hostname>/api/v1/revtr --data '{"revtrs":[{"src":"<your-source-ip-address>", "dst":"1.1.1.1"}]}'
 ```
