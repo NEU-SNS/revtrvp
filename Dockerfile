@@ -94,6 +94,17 @@ COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/plvp.config /
 
 RUN ldconfig
 RUN which scamper
+
+# Give the scamper binary all the needed capabilities so that the container
+# processes can run as non-root.
+#   CHOWN: scamper_privsep_init: could not chown /var/empty: Operation not permitted
+#   DAC_OVERRIDE: Could not connect to "/var/local/tcpinfoeventsocket/tcpevents.sock" (error: dial unix /var/local/tcpinfoeventsocket/tcpevents.sock: connect: permission denied)
+#   NET_RAW: to be able to talk ICMP
+#   SETGID: scamper_privsep_init: could not setgroups: Operation not permitted
+#   SETUID: scamper_privsep_init: could not setuid: Operation not permitted
+#   SYS_CHROOT: scamper_privsep_init: could not chroot to /var/empty: Operation not permitted
+RUN setcap cap_chown,cap_dac_override,cap_net_raw,cap_setgid,cap_setuid,cap_sys_chroot=ep /usr/local/bin/scamper
+
 WORKDIR /
 
 ENTRYPOINT ["/revtrvp"]
