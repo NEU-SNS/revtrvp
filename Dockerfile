@@ -105,6 +105,9 @@ RUN which scamper
 #   SYS_CHROOT: scamper_privsep_init: could not chroot to /var/empty: Operation not permitted
 RUN setcap cap_chown,cap_dac_override,cap_net_raw,cap_setgid,cap_setuid,cap_sys_chroot=ep /usr/local/bin/scamper
 
+# The revtrvp process needs to create raw sockets to listen for ICMP packets.
+RUN setcap cap_net_raw=ep /revtrvp
+
 WORKDIR /
 
 ENTRYPOINT ["/revtrvp"]
