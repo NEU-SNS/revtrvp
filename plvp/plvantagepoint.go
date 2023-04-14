@@ -269,8 +269,10 @@ func (vp *plVantagepointT) run(c Config, s SendCloser, ec chan error) {
 	vp.monec = make(chan error, 10000)
 	// Increase the size of the spoofing monitoring chanel
 	vp.monip = make(chan dm.Probe, 100000)
-	go vp.spoofmon.Start(monaddr, plVantagepoint.monip, plVantagepoint.monec)
-	go vp.monitorSpoofedPings(plVantagepoint.monip, plVantagepoint.monec)
+	if !*c.Local.SenderOnly {
+		go vp.spoofmon.Start(monaddr, plVantagepoint.monip, plVantagepoint.monec)
+		go vp.monitorSpoofedPings(plVantagepoint.monip, plVantagepoint.monec)
+	}
 	if *c.Local.StartScamp {
 		plVantagepoint.startScamperProcs()
 	}
