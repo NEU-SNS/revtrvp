@@ -55,6 +55,8 @@ func init() {
 		"The url for the plcontroller service")
 	flag.IntVar(plvp.Conf.Local.Port, "p", 4380,
 		"The port the controller service is listening on")
+	flag.BoolVar(plvp.Conf.Local.SenderOnly, "sender-only", false,
+		"Whether this source is not supposed to receive spoofed packets")
 	flag.BoolVar(plvp.Conf.Local.StartScamp, "start-scamper", true,
 		"Determines if scamper starts or not.")
 	flag.StringVar(plvp.Conf.Scamper.BinPath, "b", "/usr/local/bin/scamper",

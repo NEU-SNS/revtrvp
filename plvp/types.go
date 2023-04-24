@@ -56,6 +56,7 @@ type LocalConfig struct {
 	Host         *string `flag:"host"`
 	RootCA       *string `flag:"root-ca"`
 	Interface    *string `flag:"i"`
+	SenderOnly   *bool   `flag:"sender-only"`
 }
 
 // ScamperConfig represents the scamper configuration options
@@ -88,6 +89,7 @@ func NewConfig() Config {
 		Port:         new(int),
 		RootCA:       new(string),
 		Interface:    new(string),
+		SenderOnly:   new(bool),
 	}
 	sc := ScamperConfig{
 		Port:    new(string),

@@ -244,8 +244,9 @@ func getProbe(conn *ipv4.RawConn) (*dm.Probe, error) {
 func (sm *SpoofPingMonitor) poll(addr string, probes chan<- dm.Probe, ec chan error) {
 	c, err := reconnect(addr)
 	if err != nil {
-		ec <- err
-		return
+		log.Errorf("socket: the node will not be able to listen for spoofed probes")
+		// We panic here as the node is supposed to be able to listen for spoofed probes.
+		panic(err)
 	}
 	for {
 		select {
