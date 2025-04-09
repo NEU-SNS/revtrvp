@@ -62,8 +62,8 @@ The hop types and number are described in the next table. For more details, plea
 | 4  |  Intersected Record Route atlas | This hop was found in a Record Route hop revealed by our new technique to reveal Record Route interfaces from the traceroute atlas (Sec. 4.1, Q2 and Sec. 4.2). See more details about how to process these hops [here](#more-details-about-processing-hops-of-type-4-intersected-record-route-atlas) |
 | 5  |  Record Route | This hop was found using Record Route (Sec.2, Record Route) |
 | 6  |  Spoofed Record Route | This hop was found using spoofed Record Route (Sec.2, Record Route) |
-| 11  | Assume symmetry Intradomain  | This hop was found by running a forward traceroute to the current previous hop and assumed symmetry on the penultimate hop, i.e. the penultimate hop was the next reverse hop and the two hops are in the same AS. This should be considered as a **safe** assumption (see Section 4.4 of the paper).|
-| 12  | Assume symmetry Interdomain  | This hop was found by running a forward traceroute to the current previous hop and assumed symmetry on the penultimate hop, i.e. the penultimate hop was the next reverse hop and the two hops are in the same AS. This should **NOT** be considered as a **safe** assumption (see Section 4.4 of the paper).|
+| 11  | Assume symmetry Intradomain  | This hop was found by running a forward traceroute to the current previous hop and assumed symmetry on the penultimate hop, i.e. the penultimate hop was the next reverse hop and the two hops are in the **same** AS. This should be considered as a **safe** assumption (see Section 4.4 of the paper).|
+| 12  | Assume symmetry Interdomain  | This hop was found by running a forward traceroute to the current previous hop and assumed symmetry on the penultimate hop, i.e. the penultimate hop was the next reverse hop and the two hops are in **different** ASes. This should **NOT** be considered as a **safe** assumption (see Section 4.4 of the paper).|
 
 #### Details about how to interpret hops of type 2, assumed symmetric
 
