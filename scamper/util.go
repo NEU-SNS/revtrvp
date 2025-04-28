@@ -56,6 +56,8 @@ const (
 	ADDRINDEX = 2
 	// PPS is the packet per second rate of the scamper process
 	PPS = "-p"
+	// Private key of the server
+	CAFILE = "cafile"
 )
 
 // Config is the configuration options for the scamper process
@@ -65,7 +67,8 @@ type Config struct {
 	ScPath       string
 	IP           string
 	ScParserPath string
-	Rate         string 
+	Rate         string
+	CAFile       string
 }
 
 // ParseConfig checks the given confiuration options to ensure validity
@@ -83,6 +86,11 @@ func ParseConfig(sc Config) error {
 			return err
 		}
 	}
+
+	if sc.CAFile == "" {
+		return util.ErrorInvalidCAFile
+	}
+
 	return checkBinPath(sc.ScPath)
 }
 
@@ -134,7 +142,7 @@ func GetProc(sockDir, scampPort, scamperPath string) *proc.Process {
 }
 
 // GetVPProc returns a process which is suitable to run on a planet-lab VP
-func GetVPProc(scpath, host, port, rate string) *proc.Process {
+func GetVPProc(scpath, host, port, rate, caFile string) *proc.Process {
 	faddr := fmt.Sprintf("%s:%s", host, port)
-	return proc.New(scpath, nil, "-O", "notls", "-O", "notls-remote", REMOTE, faddr, PPS, rate)
+	return proc.New(scpath, nil, "-O", CAFILE+"="+caFile, REMOTE, faddr, PPS, rate)
 }

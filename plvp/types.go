@@ -30,16 +30,16 @@ package plvp
 
 // Flags represents the arguments to the vantage-point
 type Flags struct {
-	Environment     EnvironmentConfig
-	Local   LocalConfig
-	Scamper ScamperConfig
+	Environment EnvironmentConfig
+	Local       LocalConfig
+	Scamper     ScamperConfig
 }
 
 // Config represents the configuration of the vantage-point
 type Config struct {
-	Environment     EnvironmentConfig
-	Local   LocalConfig
-	Scamper ScamperConfig
+	Environment EnvironmentConfig
+	Local       LocalConfig
+	Scamper     ScamperConfig
 }
 
 // LocalConfig represents the configuration of the vantage-point minus Scamper
@@ -65,6 +65,7 @@ type ScamperConfig struct {
 	Host    *string `flag:"scamper-host"`
 	Port    *string `flag:"scamper-port"`
 	Rate    *string `flag:"scamper-rate"`
+	CAFile  *string `flag:"ca-file"`
 }
 
 type EnvironmentConfig struct {
@@ -73,7 +74,7 @@ type EnvironmentConfig struct {
 
 // NewConfig creates a new config struct for the plvp
 func NewConfig() Config {
-	ec := EnvironmentConfig {
+	ec := EnvironmentConfig{
 		Debug: new(bool),
 	}
 	lc := LocalConfig{
@@ -95,11 +96,11 @@ func NewConfig() Config {
 		Port:    new(string),
 		Host:    new(string),
 		BinPath: new(string),
-		Rate:    new(string), 
+		Rate:    new(string),
 	}
 	return Config{
-		Environment:     ec, 
-		Local:   lc,
-		Scamper: sc,
+		Environment: ec,
+		Local:       lc,
+		Scamper:     sc,
 	}
 }

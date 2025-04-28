@@ -52,7 +52,8 @@ var (
 	// ErrorInvalidIP is the error if the IP is invalid
 	ErrorInvalidIP = errors.New("invalid IP address")
 	// ErrorInvalidPort is the error if the Port is invalid
-	ErrorInvalidPort = errors.New("invalid port")
+	ErrorInvalidPort   = errors.New("invalid port")
+	ErrorInvalidCAFile = errors.New("invalid ca file")
 )
 
 // IsDir checks if what is at path dir is a directory
@@ -229,7 +230,7 @@ func MicroToNanoSec(usec int64) int64 {
 	return usec * 1000
 }
 
-// GetBindAddr gets the IP of the eth0 like address 
+// GetBindAddr gets the IP of the eth0 like address
 // (!!MLab specific!!: use net1 because eth0 is private)
 func GetBindAddr(netInterface string) (string, error) {
 	ifaces, err := net.Interfaces()
@@ -237,16 +238,16 @@ func GetBindAddr(netInterface string) (string, error) {
 		return "", err
 	}
 	for _, iface := range ifaces {
-		
+
 		if strings.Contains(iface.Name, netInterface) &&
-		// if strings.Contains(iface.Name, "net1") &&
-		// if strings.Contains(iface.Name, "en7") &&
-				uint(iface.Flags)&uint(net.FlagUp) > 0 {
+			// if strings.Contains(iface.Name, "net1") &&
+			// if strings.Contains(iface.Name, "en7") &&
+			uint(iface.Flags)&uint(net.FlagUp) > 0 {
 			addrs, err := iface.Addrs()
 			if err != nil {
 				return "", err
 			}
-			for _, addr := range (addrs){
+			for _, addr := range addrs {
 				// addr := addrs[0]
 				addressType := checkIPAddressType(addr.String())
 				if addressType != IPv4AddressType {
@@ -266,26 +267,26 @@ func GetBindAddr(netInterface string) (string, error) {
 type AddressType string
 
 const (
-	IPv4AddressType AddressType = "IPv4"
-	IPv6AddressType AddressType = "IPv6"
+	IPv4AddressType    AddressType = "IPv4"
+	IPv6AddressType    AddressType = "IPv6"
 	InvalidAddressType AddressType = "Invalid"
-) 
+)
 
 func checkIPAddressType(addr string) AddressType {
 	ip, _, err := net.ParseCIDR(addr)
-    if err != nil {
-        fmt.Printf("Invalid IP Address: %s\n", ip)
-        return InvalidAddressType
-    }
-    for i := 0; i < len(addr); i++ {
-        switch addr[i] {
-        case '.':
-            fmt.Printf("Given IP Address %s is IPV4 type\n", ip)
-            return IPv4AddressType
-        case ':':
-            fmt.Printf("Given IP Address %s is IPV6 type\n", ip)
-            return IPv6AddressType
-        }
-    }
+	if err != nil {
+		fmt.Printf("Invalid IP Address: %s\n", ip)
+		return InvalidAddressType
+	}
+	for i := 0; i < len(addr); i++ {
+		switch addr[i] {
+		case '.':
+			fmt.Printf("Given IP Address %s is IPV4 type\n", ip)
+			return IPv4AddressType
+		case ':':
+			fmt.Printf("Given IP Address %s is IPV6 type\n", ip)
+			return IPv6AddressType
+		}
+	}
 	return InvalidAddressType
 }

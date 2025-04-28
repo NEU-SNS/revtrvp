@@ -52,7 +52,6 @@ import (
 	"net/http"
 )
 
-
 var (
 	procCollector = prometheus.NewProcessCollectorPIDFn(func() (int, error) {
 		return os.Getpid(), nil
@@ -89,7 +88,7 @@ type SendCloser interface {
 
 type PLControllerSender struct {
 	RootCA string
-	conn *grpc.ClientConn
+	conn   *grpc.ClientConn
 }
 
 func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
@@ -105,7 +104,7 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 		lgg := "Probe src: " + srcs + " dst: " + dsts
 		lgg += " RR hops:"
 
-		if p.GetRR() != nil  {
+		if p.GetRR() != nil {
 			if p.GetRR().GetHops() != nil {
 				for _, hop := range p.GetRR().GetHops() {
 					hopstr, _ := util.Int32ToIPString(hop)
@@ -116,8 +115,7 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 
 		log.Infof("Sending back to controller: " + lgg)
 	}
-	
-	
+
 	if cs.conn == nil {
 		if *Conf.Environment.Debug {
 			log.Infof("Connecting to plcontroller to %s %d", *Conf.Local.Host, *Conf.Local.Port)
@@ -127,16 +125,16 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 				log.Error(err)
 				return err
 			}
-			
+
 			addr := fmt.Sprintf("%s:%d", *Conf.Local.Host, *Conf.Local.Port)
-		
+
 			cc, err := grpc.Dial(addr, grpc.WithTransportCredentials(creds))
 			if err != nil {
 				log.Error(err)
 				return err
 			}
 			cs.conn = cc
-			
+
 		} else {
 			_, srvs, err := net.LookupSRV("plcontroller", "tcp", "revtr.ccs.neu.edu")
 			log.Infof("Found %d plcontroller tcp services", len(srvs))
@@ -144,9 +142,9 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 				log.Error(err)
 				return err
 			}
-			for i, srv := range(srvs) {
+			for i, srv := range srvs {
 				if i > 0 {
-					// Allow only one connection to GRPC for now, but someday might be useful 
+					// Allow only one connection to GRPC for now, but someday might be useful
 					// if we have multiple controllers.
 					break
 				}
@@ -156,9 +154,9 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 					log.Error(err)
 					continue
 				}
-				
+
 				addr := fmt.Sprintf("%s:%d", srv.Target, srv.Port)
-			
+
 				cc, err := grpc.Dial(addr, grpc.WithTransportCredentials(creds))
 				if err != nil {
 					log.Error(err)
@@ -166,9 +164,8 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 				}
 				cs.conn = cc
 			}
-		}	
+		}
 	}
-	
 
 	log.Debug("Establishing PLController conn...\n")
 	client := plc.NewPLControllerClient(cs.conn)
@@ -179,8 +176,8 @@ func (cs *PLControllerSender) Send(ps []*dm.Probe) error {
 	_, err := client.AcceptProbes(contx, &dm.SpoofedProbes{Probes: ps})
 	if err != nil {
 		return err
-	} 
-	
+	}
+
 	return nil
 }
 
@@ -240,6 +237,8 @@ func (vp *plVantagepointT) run(c Config, s SendCloser, ec chan error) {
 	con.IP = *c.Scamper.Host
 	con.Port = *c.Scamper.Port
 	con.Rate = *c.Scamper.Rate
+	con.CAFile = *c.Scamper.CAFile
+
 	err := scamper.ParseConfig(*con)
 	if err != nil {
 		log.Errorf("Invalid scamper args: %v", err)
@@ -323,7 +322,7 @@ func pickIP(host string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
+
 	addrIndex := rand.Intn(len(addrs))
 	addr := addrs[addrIndex]
 	log.Debugf("Found IP address to bind %s to %s", host, addr)
@@ -332,6 +331,6 @@ func pickIP(host string) (string, error) {
 
 func (vp *plVantagepointT) startScamperProcs() {
 	log.Info("Starting scamper procs")
-	sp := scamper.GetVPProc(vp.sc.ScPath, vp.sc.IP, vp.sc.Port, vp.sc.Rate)
+	sp := scamper.GetVPProc(vp.sc.ScPath, vp.sc.IP, vp.sc.Port, vp.sc.Rate, vp.sc.CAFile)
 	vp.mp.ManageProcess(sp, true, math.MaxUint32)
 }
