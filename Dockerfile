@@ -1,5 +1,7 @@
 FROM ubuntu:18.04 as build_scamper
 
+ARG PLVP_CONFIG
+
 RUN dpkg --add-architecture i386
 
 RUN apt-get update && \
@@ -24,24 +26,24 @@ RUN apt-get update && \
 
 RUN mkdir -p scamper-src && \
     cd scamper-src && \
-    # wget http://www.ccs.neu.edu/home/rhansen2/scamper.tar.gz && \
-    # tar xzf scamper.tar.gz && cd scamper-cvs-20150901
-    wget http://fring2.khoury.northeastern.edu/scamper-cvs-20211212x.tar.gz && \
-    tar xzf scamper-cvs-20211212x.tar.gz && cd scamper-cvs-20211212x
+    # wget http://fring2.khoury.northeastern.edu/scamper-cvs-20211212x.tar.gz && \
+    # tar xzf scamper-cvs-20211212x.tar.gz && cd scamper-cvs-20211212x
+    wget http://fring2.khoury.northeastern.edu/scamper-cvs-20250401.tar.gz && \
+    tar xzf scamper-cvs-20250401.tar.gz && cd scamper-cvs-20250401
 
 # For debugging scamper
 # RUN mkdir -p scamper-src
 # COPY scamper/scamper-cvs-20150901 /scamper-src/scamper-cvs-20150901
 
-WORKDIR /scamper-src/scamper-cvs-20211212x/
+WORKDIR /scamper-src/scamper-cvs-20250401/
 # WORKDIR /scamper-src/scamper-cvs-20150901/
 RUN apt-get install --yes libc6-dev zlib1g-dev
-RUN apt-get install -y libssl1.0-dev
+RUN apt-get install -y libssl-dev
 # RUN ./configure --enable-static --disable-shared CFLAGS="-static -lssl -lcrypto -lpthread  -lz -ldl -static-libgcc" LIBS="-lssl -lcrypto -lpthread  -lz -ldl"
 RUN ./configure --enable-debug
-# RUN  make -j8
 RUN ls
-RUN make LDFLAGS="-all-static" LIBS="-lssl -lcrypto -lpthread -lm -ldl " -j16
+# RUN make LDFLAGS="-all-static" LIBS="-lssl -lcrypto -lpthread -lm -ldl " -j16
+RUN make -j 16
 RUN  make install
 # RUN apt-get -y install gdb
 # RUN ldd scamper/scamper
@@ -87,7 +89,7 @@ FROM build_scamper
 COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/revtrvp /
 # COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/root.crt /
 COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/server.crt /
-COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/plvp.config /
+COPY --from=build_revtrvp /go/src/github.com/NEU-SNS/revtrvp/$PLVP_CONFIG  /
 
 # COPY --from=build_scamper /usr/local/bin/scamper /usr/local/bin
 # COPY --from=build_scamper /usr/lib/x86_64-linux-gnu/ /usr/lib/x86_64-linux-gnu/
@@ -111,7 +113,7 @@ RUN setcap cap_net_raw=ep /revtrvp
 WORKDIR /
 
 ENTRYPOINT ["/revtrvp"]
-CMD ["/server.crt", "plvp.config", "-loglevel", "error"]
+CMD ["/server.crt", $PLVP_CONFIG, "-loglevel", "error"]
 
 EXPOSE 4381
 
