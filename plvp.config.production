@@ -1,10 +1,10 @@
 environment:
-    debug: true
+    debug: false
 local:
     autoconnect: true
     proto: tcp
     host: 'plcontroller.revtr.ccs.neu.edu'
-    port: 9001
+    port: 4380
     pprofaddr: ':55557'
     startscamp: true
     rootca: /server.crt
@@ -12,7 +12,7 @@ local:
     senderonly: false
 scamper:
     host: 'plcontroller.revtr.ccs.neu.edu'
-    binpath: '/usr/local/bin/scamper'
-    port: 4299
+    binpath: /usr/local/bin/scamper
+    port: 4381
     rate: 300
     cafile: /server.crt
