@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 as build_scamper
+FROM ubuntu:18.04 AS build_scamper
 
 ARG PLVP_CONFIG
 
@@ -15,6 +15,7 @@ RUN apt-get update && \
       git \
       inetutils-traceroute \
       init-system-helpers \
+      iproute2 \
       iputils-ping \
       libtool \
       python3 \
@@ -37,8 +38,10 @@ RUN mkdir -p scamper-src && \
 
 WORKDIR /scamper-src/scamper-cvs-20250401/
 # WORKDIR /scamper-src/scamper-cvs-20150901/
-RUN apt-get install --yes libc6-dev zlib1g-dev
-RUN apt-get install -y libssl-dev
+RUN apt-get update && \
+    apt-get install --yes libc6-dev zlib1g-dev
+RUN apt-get update && \
+    apt-get install -y libssl-dev
 # RUN ./configure --enable-static --disable-shared CFLAGS="-static -lssl -lcrypto -lpthread  -lz -ldl -static-libgcc" LIBS="-lssl -lcrypto -lpthread  -lz -ldl"
 RUN ./configure --enable-debug
 RUN ls
@@ -68,7 +71,7 @@ RUN  make install
 # Create cron log file 
 #RUN touch /var/log/cron.log
 
-FROM golang:1.19.3 as build_revtrvp
+FROM golang:1.19.3 AS build_revtrvp
 
 ADD . /go/src/github.com/NEU-SNS/revtrvp
 WORKDIR /go/src/github.com/NEU-SNS/revtrvp
@@ -113,7 +116,7 @@ RUN setcap cap_net_raw=ep /revtrvp
 WORKDIR /
 
 ENTRYPOINT ["/revtrvp"]
-CMD ["/server.crt", $PLVP_CONFIG, "-loglevel", "error"]
+CMD ["/server.crt", "$PLVP_CONFIG", "-loglevel", "error"]
 
 EXPOSE 4381
 
