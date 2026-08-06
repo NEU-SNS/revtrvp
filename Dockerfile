@@ -73,9 +73,11 @@ RUN  make install
 
 FROM golang:1.19.3 AS build_revtrvp
 
+ARG GO_FLAGS
+
 ADD . /go/src/github.com/NEU-SNS/revtrvp
 WORKDIR /go/src/github.com/NEU-SNS/revtrvp
-RUN go build -o revtrvp .
+RUN go build ${GO_FLAGS} -o revtrvp .
 RUN chmod -R a+rx /go/src/github.com/NEU-SNS/revtrvp/revtrvp
 
 #WORKDIR /plvp
