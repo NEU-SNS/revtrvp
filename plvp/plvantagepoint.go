@@ -285,7 +285,7 @@ func startHTTP(addr string) {
 
 // Start a plvp with the given config
 func Start(c Config, s SendCloser) chan error {
-	log.Info("Starting plvp with config: %v", c)
+	log.Infof("Starting plvp with config: %v", c)
 	http.Handle("/metrics", prometheus.Handler())
 	go startHTTP(*c.Local.PProfAddr)
 	errChan := make(chan error, 1)
