@@ -39,6 +39,11 @@ var (
 	ErrorInvalidType = fmt.Errorf("Parse must be passed a non-nil pointer")
 )
 
+// merge only fills in flags that have not already been set by a
+// higher-precedence source. It uses f.Set (rather than calling
+// fl.Value.Set directly) so the FlagSet records the flag as set,
+// letting a later merge() call (e.g. mergeFiles after mergeEnvironment)
+// correctly see it as already set and skip it.
 func merge(f *flag.FlagSet, fn func(string) *string) error {
 	setFlags := make(map[string]bool)
 	f.Visit(func(fl *flag.Flag) {
@@ -51,7 +56,7 @@ func merge(f *flag.FlagSet, fn func(string) *string) error {
 			if val == nil {
 				return
 			}
-			err = fl.Value.Set(*val)
+			err = f.Set(fl.Name, *val)
 		}
 	})
 	return err

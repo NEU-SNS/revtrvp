@@ -30,7 +30,6 @@ package config
 
 import (
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -97,7 +96,6 @@ func (cp configPathOrder) Swap(i, j int)      { cp[i], cp[j] = cp[j], cp[i] }
 func (cp configPathOrder) Less(i, j int) bool { return cp[i].Order < cp[j].Order }
 
 func mergeFiles(f *flag.FlagSet, opts interface{}) error {
-	ov := reflect.ValueOf(opts)
 	paths := make([]configPath, len(configFiles.ConfigPaths))
 	var i int
 	for _, val := range configFiles.ConfigPaths {
@@ -105,73 +103,89 @@ func mergeFiles(f *flag.FlagSet, opts interface{}) error {
 		i++
 	}
 	sort.Sort(configPathOrder(paths))
+
+	// parseYamlConfig unmarshals each file directly onto the live opts,
+	// as it always has - this is what makes fields with no corresponding
+	// registered flag (e.g. a struct field with a "flag" tag that main
+	// never actually binds via flag.XxxVar) still get set from a config
+	// file at all, since those can only ever come from a file.
+	//
+	// For fields that DO have a registered flag and were already set by
+	// a higher-precedence source (a command line flag or environment
+	// variable), that unconditional unmarshal would clobber the higher-
+	// precedence value. snapshotProtected/restoreProtected undo that:
+	// snapshot those fields' values before any file is applied, then
+	// restore them after each file, so a file can still freely set
+	// anything not already set elsewhere.
+	protected := snapshotProtected(f, opts)
 	for _, path := range paths {
-		err := parseYamlConfig(path.Path, opts)
-		if err != nil {
+		if err := parseYamlConfig(path.Path, opts); err != nil {
 			return err
 		}
-		ops, err := buildMap(ov)
-		if err != nil {
-			return nil
-		}
-		err = handleFile(f, ops)
-		if err != nil {
-			return err
-		}
+		restoreProtected(protected)
 	}
 	return nil
 }
 
-func mergeMaps(a, b map[string]string) {
-	if b == nil {
-		return
-	}
-	for key, value := range b {
-		a[key] = value
-	}
+// protectedField pairs a settable struct field with the value it held
+// before any config file was applied.
+type protectedField struct {
+	field reflect.Value
+	saved reflect.Value
 }
 
-func buildMap(opts reflect.Value) (map[string]string, error) {
-	res := make(map[string]string)
-	ot := opts.Elem().Type()
-	numFields := ot.NumField()
-	for i := 0; i < numFields; i++ {
-		field := ot.Field(i)
-		if field.Type.Kind() == reflect.Struct {
-			subOpts, err := buildMap(opts.Elem().Field(i).Addr())
-			if err != nil {
-				return nil, err
-			}
-			mergeMaps(res, subOpts)
-			continue
-		}
-		name := field.Tag.Get("flag")
-		if name == "" {
-			continue
-		}
-		var val string
-		switch opts.Elem().Field(i).Kind() {
-		case reflect.Ptr:
-			if opts.Elem().Field(i).IsNil() {
-				continue
-			}
-			val = fmt.Sprintf("%v", opts.Elem().Field(i).Elem())
-		default:
-			val = fmt.Sprintf("%v", opts.Elem().Field(i).Interface())
-		}
-		res[name] = val
-	}
-	return res, nil
-}
-
-func handleFile(f *flag.FlagSet, opts map[string]string) error {
-	err := merge(f, func(name string) *string {
-		if val, ok := opts[name]; ok {
-			if val != "" {
-				return &val
-			}
-		}
-		return nil
+func snapshotProtected(f *flag.FlagSet, opts interface{}) []protectedField {
+	setFlags := make(map[string]bool)
+	f.Visit(func(fl *flag.Flag) {
+		setFlags[fl.Name] = true
 	})
-	return err
+	var protected []protectedField
+	walkFields(reflect.ValueOf(opts), func(fv reflect.Value, tag string) {
+		if tag == "" || !setFlags[tag] {
+			return
+		}
+		// For a pointer field, config.Parse's flag/env layers set the
+		// value by writing through the pointer (*p = val), never by
+		// replacing the field with a new pointer - and empirically,
+		// yaml.Unmarshal decoding into an already-non-nil pointer field
+		// does the same (mutates in place, reusing the pointer). So the
+		// field itself is never a useful thing to snapshot: it's the
+		// same pointer before and after. Snapshot/restore the
+		// dereferenced value instead, which is where the actual content
+		// - and the risk of a file clobbering it - lives.
+		target := fv
+		if fv.Kind() == reflect.Ptr {
+			if fv.IsNil() {
+				return
+			}
+			target = fv.Elem()
+		}
+		saved := reflect.New(target.Type()).Elem()
+		saved.Set(target)
+		protected = append(protected, protectedField{field: target, saved: saved})
+	})
+	return protected
+}
+
+func restoreProtected(protected []protectedField) {
+	for _, p := range protected {
+		p.field.Set(p.saved)
+	}
+}
+
+// walkFields calls fn for every leaf (non-struct) field reachable from
+// v, a pointer to a struct, recursing into nested (non-pointer) structs.
+// fn receives the field's "flag" struct tag, which may be empty.
+func walkFields(v reflect.Value, fn func(field reflect.Value, tag string)) {
+	elem := v.Elem()
+	t := elem.Type()
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		fv := elem.Field(i)
+		if field.Type.Kind() == reflect.Struct {
+			walkFields(fv.Addr(), fn)
+			continue
+		}
+		fn(fv, field.Tag.Get("flag"))
+	}
 }
