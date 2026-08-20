@@ -133,6 +133,7 @@ should not to need to change anything, but we discuss two parameters:
 You can build the Docker container running `docker build -t <tag> .`
 inside the repository's root directory.  Set a `tag` to more easily
 launch the container later.
+Additionally, you can add flags for the `golang` compile by providing them as build args, e.g., `docker build --build-arg GO_FLAGS="-buildvcs=true" -t <tag> .`
 
 ## Add the source to the system
 
